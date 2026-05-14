@@ -22,7 +22,7 @@ function Hero({ navigate }) {
   return (
     <section id="home" style={{
       minHeight: "100vh",
-      background: "linear-gradient(180deg,rgba(13,27,42,0.70) 0%,rgba(13,27,42,0.55) 50%,rgba(13,27,42,0.88) 100%), url('https://images.unsplash.com/photo-1562774053-701939374585?w=1600&q=80') center/cover no-repeat",
+      background: "linear-gradient(180deg,rgba(13,27,42,0.70) 0%,rgba(13,27,42,0.55) 50%,rgba(13,27,42,0.88) 100%), url('public/images/BG PHOTO.jpeg') center/cover no-repeat",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       textAlign: "center", padding: "0 24px", position: "relative",
@@ -73,7 +73,9 @@ function CalendarSection() {
   const daysInMonth = new Date(year, month+1, 0).getDate();
   const cells = Array.from({ length: firstDay+daysInMonth }, (_, i) => i < firstDay ? null : i-firstDay+1);
   const upcoming = [
-    { day:12, title:"Tech Innovation Summit", cat:"Technology", color:"#8B5CF6" },
+    { day:8, title:"Sports Weekend",         cat:"Sports", color:"#3B82F6" },
+    { day:10, title:"End of Sports Week",        cat:"Sports", color:"#8B5CF6" },
+    { day:12, title:"Hackathon", cat:"Technology", color:"#8B5CF6" },
     { day:18, title:"Campus Music Festival",  cat:"Music",      color:"#EC4899" },
     { day:22, title:"AI Workshop",            cat:"Workshop",   color:"#10B981" },
     { day:27, title:"Art Exhibition",         cat:"Arts",       color:"#F59E0B" },
@@ -159,17 +161,17 @@ function ContactSection() {
     background:"#fff", outline:"none", boxSizing:"border-box", transition:"border-color 0.2s",
   };
   const infos = [
-    { icon:"📍", label:"Address", value:"Techno India NJR Institute of Technology" },
-    { icon:"📧", label:"Email",   value:"events@smartevent.edu" },
-    { icon:"📞", label:"Phone",   value:"+91 98765 43210" },
-    { icon:"🕐", label:"Hours",   value:"Mon – Fri, 9 AM – 5 PM" },
+    {  label:"Address :", value:"Dhemaji Engineering College, Tekjuri" },
+    {  label:"Email :",   value:"xyz@gmail.com" },
+    {  label:"Contact :",   value:"+91 93xxxxxx03" },
+    {  label:"Open :",   value:"Mon – Fri, 8 AM – 4 PM" },
   ];
   return (
     <section id="contact" style={{
       minHeight:"100vh", background:C.navy,
       padding:"90px 24px 80px", display:"flex", flexDirection:"column", alignItems:"center",
     }}>
-      <p style={{ color:C.blue,fontSize:13,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",margin:"0 0 10px",fontFamily:"system-ui" }}>Get In Touch</p>
+      <p style={{ color:C.blue,fontSize:13,fontWeight:700,letterSpacing:"0.14em",textTransform:"uppercase",margin:"0 0 10px",fontFamily:"system-ui" }}></p>
       <h2 style={{ fontFamily:"Georgia,serif",fontWeight:700,fontSize:"clamp(26px,4vw,42px)",color:"#fff",margin:"0 0 12px",textAlign:"center" }}>Contact Us</h2>
       <p style={{ color:C.muted,fontSize:15,margin:"0 0 48px",textAlign:"center",fontFamily:"system-ui" }}>Have questions about an event? We'd love to hear from you.</p>
       <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:32,maxWidth:940,width:"100%" }}>
