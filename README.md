@@ -293,4 +293,4 @@ This project is developed purely for **academic purposes**. Not intended for com
 
 ---
 
-<p align="center">Built with ❤️ for our college community</p>
+
