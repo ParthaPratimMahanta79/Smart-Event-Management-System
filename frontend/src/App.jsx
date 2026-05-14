@@ -6,6 +6,8 @@ import Calendar from './pages/Calendar'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import Gallery from './pages/Gallery'
+import Register from './pages/Register'
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
           <Route path="/Contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
           <Route path="/Gallery" element={<Gallery />} /> 
+          <Route path="/Register" element={<Register />} />
         </Route>
       </Routes>
     </BrowserRouter>

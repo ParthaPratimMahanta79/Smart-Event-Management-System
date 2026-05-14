@@ -36,6 +36,7 @@ export default function Navbar() {
   const getActive = () => {
     if (location.pathname === "/Events")  return "events";
     if (location.pathname === "/Gallery") return "gallery";
+    if (location.pathname === "/Register") return "register";
     return "home"; // default for "/" and others
   };
   const active = getActive();
@@ -46,6 +47,7 @@ export default function Navbar() {
     { id: "gallery",  label: "Gallery",  fn: () => navigate("/Gallery") },
     { id: "calendar", label: "Calendar", fn: () => scrollTo("calendar") },
     { id: "contact",  label: "Contact",  fn: () => scrollTo("contact") },
+    { id: "register", label: "Register", fn: () => navigate("/Register") },
   ];
 
   return (
