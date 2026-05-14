@@ -1,69 +1,100 @@
 import { useState } from "react";
 
+
 const DEFAULT_IMAGES = [
   {
     id: 1,
-    src: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80",
-    name: "opening_ceremony.jpg",
+    src: "/images/ArcanixPhoto.jpeg",
+    name: "ArcanixPhoto.jpeg",
     size: "2.1 MB",
     type: "FILE",
   },
   {
     id: 2,
-    src: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80",
-    name: "main_stage.jpg",
-    size: "1.8 MB",
+    src: "/images/Arcanix(techFest).jpeg",
+    name: "Arcanix(techFest).jpeg",
+    size: "2.1 MB",
     type: "FILE",
   },
   {
     id: 3,
-    src: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600&q=80",
-    name: "gala_dinner.jpg",
-    size: "2.4 MB",
-    type: "FILE",
-  },
-  {
-    id: 4,
-    src: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600&q=80",
-    name: "awards_night.jpg",
+    src: "/images/Bootcamp.jpeg",
+    name: "Bootcamp.jpeg",
     size: "1.9 MB",
     type: "FILE",
   },
   {
-    id: 5,
-    src: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=600&q=80",
-    name: "keynote_speech.jpg",
-    size: "2.2 MB",
-    type: "FILE",
-  },
-  {
-    id: 6,
-    src: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=600&q=80",
-    name: "workshop_session.jpg",
-    size: "1.7 MB",
-    type: "FILE",
-  },
-  {
-    id: 7,
-    src: "https://images.unsplash.com/photo-1529543544282-ea669407fca3?w=600&q=80",
-    name: "networking.jpg",
-    size: "2.0 MB",
-    type: "FILE",
-  },
-  {
-    id: 8,
-    src: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&q=80",
-    name: "team_photo.jpg",
+    id: 4,
+    src: "/images/CampusCeremony.jpeg",
+    name: "CampusCeremony.jpeg",
     size: "2.3 MB",
     type: "FILE",
   },
+  
+   
   {
-    id: 9,
-    src: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600&q=80",
-    name: "crowd_highlights.jpg",
-    size: "2.6 MB",
+    id: 5,
+    src: "/images/Freshers.jpeg",
+    name: "Freshers.jpeg",
+    size: "2.0 MB",
     type: "FILE",
   },
+
+   {
+    id: 6,
+    src: "/images/Fresherss.jpeg",
+    name: "Fresherss.jpeg",
+    size: "2.0 MB",
+    type: "FILE",
+  },
+
+   {
+    id: 8,
+    src: "/images/sessionsDec.jpeg",
+    name: "sessionsDec.jpeg",
+    size: "2.0 MB",
+    type: "FILE",
+  },
+
+   {
+    id: 9,
+    src: "/images/Teachers Day.jpeg",
+    name: "Teachers Day.jpeg",
+    size: "2.0 MB",
+    type: "FILE",
+  },
+
+   {
+    id: 10,
+    src: "/images/Teachersday.jpeg",
+    name: "Teachers Day.jpeg",
+    size: "2.0 MB",
+    type: "FILE",
+  },
+
+   {
+    id: 11,
+    src: "/images/TeachersdaySpeech.jpeg",
+    name: "Teachers Day.jpeg",
+    size: "2.0 MB",
+    type: "FILE",
+  },
+
+   {
+    id: 12,
+    src: "/images/TributeToZubeenDa.jpeg",
+    name: "Teachers Day.jpeg",
+    size: "2.0 MB",
+    type: "FILE",
+  },
+   {
+    id: 13,
+    src: "/images/ZubeenGargTribute.jpeg",
+    name: "Teachers Day.jpeg",
+    size: "2.0 MB",
+    type: "FILE",
+  },
+  
 ];
 
 const INITIAL_VISIBLE = 6;
