@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ALL_EVENTS } from "../data/eventsData";
+
 
 const C = { navy: "#0d1b2a", navyMid: "#1b2d45", blue: "#2563eb", muted: "#94a3b8" };
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
