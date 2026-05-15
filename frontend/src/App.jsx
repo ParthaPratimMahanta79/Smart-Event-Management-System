@@ -7,6 +7,7 @@ import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import Gallery from './pages/Gallery'
 import Register from './pages/Register'
+import Eventregister from './pages/Eventregister'
 
 
 function App() {
@@ -21,6 +22,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/Gallery" element={<Gallery />} /> 
           <Route path="/Register" element={<Register />} />
+          <Route path="/Eventregister/:id" element={<Eventregister />} />
+          
         </Route>
       </Routes>
     </BrowserRouter>

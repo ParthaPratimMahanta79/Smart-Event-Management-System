@@ -22,7 +22,7 @@ function Hero({ navigate }) {
   return (
     <section id="home" style={{
       minHeight: "100vh",
-      background: "linear-gradient(180deg,rgba(13,27,42,0.70) 0%,rgba(13,27,42,0.55) 50%,rgba(13,27,42,0.88) 100%), url('public/images/BG PHOTO.jpeg') center/cover no-repeat",
+      background: "linear-gradient(180deg,rgba(13,27,42,0.70) 0%,rgba(13,27,42,0.55) 50%,rgba(13,27,42,0.88) 100%), url('/images/BG PHOTO.jpeg') center/cover no-repeat",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       textAlign: "center", padding: "0 24px", position: "relative",
