@@ -1,11 +1,11 @@
 export const COMMITTEES = {
-  "Sports Committee":   { icon: "", color: "#dc2626" },
-  "Coding Committee":   { icon: "", color: "#1d6fa4" },
-  "Robotics Club":      { icon: "", color: "#7c3aed" },
-  "Cultural Committee": { icon: "", color: "#ea580c" },
-  "Media Committee":    { icon: "", color: "#0891b2" },
-  "NSS Committee":      { icon: "", color: "#15803d" },
-  "Art Committee":      { icon: "", color: "#9333ea" },
+  "Sports Committee":   { icon: "🏆", color: "#dc2626" },
+  "Coding Committee":   { icon: "💻", color: "#1d6fa4" },
+  "Robotics Club":      { icon: "🤖", color: "#7c3aed" },
+  "Cultural Committee": { icon: "🎭", color: "#ea580c" },
+  "Media Committee":    { icon: "📸", color: "#0891b2" },
+  "NSS Committee":      { icon: "🌿", color: "#15803d" },
+  "Art Committee":      { icon: "🎨", color: "#9333ea" },
 };
 
 export const ALL_COMMITTEES = ["All Committees", ...Object.keys(COMMITTEES)];
@@ -199,4 +199,5 @@ export const PAST_EVENTS = [
   },
 ];
 
-export const ALL_EVENTS = [...ONGOING_EVENTS, ...UPCOMING_EVENTS, ...PAST_EVENTS,...ALL_COMMITTEES];
+
+export const ALL_EVENTS = [...ONGOING_EVENTS, ...UPCOMING_EVENTS, ...PAST_EVENTS];

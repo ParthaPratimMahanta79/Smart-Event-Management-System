@@ -1,40 +1,34 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
+import { loginUser } from "../services/api";
 
 const C = {
   navy: "#0d1b2a",
-  navyMid: "#1b2d45",
   navyDark: "#1a3557",
   blue: "#2563eb",
-  text: "#e2e8f0",
   muted: "#94a3b8",
 };
 
-// Small helper: input that tracks its own focus for border color
 function FocusInput({ type, value, onChange, placeholder }) {
   const [focused, setFocused] = useState(false);
   return (
     <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
+      type={type} value={value} onChange={onChange} placeholder={placeholder}
+      onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
       style={{
-        width: "100%", boxSizing: "border-box",
-        padding: "11px 14px",
+        width: "100%", boxSizing: "border-box", padding: "11px 14px",
         border: `1.5px solid ${focused ? C.navyDark : "#e2e8f0"}`,
         borderRadius: 8, fontSize: 14, color: "#0f172a",
         background: "#fff", outline: "none",
-        fontFamily: "'Segoe UI', sans-serif",
-        transition: "border-color 0.15s",
+        fontFamily: "'Segoe UI', sans-serif", transition: "border-color 0.15s",
       }}
     />
   );
 }
+
+// Export so other components can trigger the login modal
+export let openLoginModal = () => {};
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -44,8 +38,6 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [dropOpen, setDropOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
-
-  // Login form state
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
@@ -53,51 +45,38 @@ export default function Navbar() {
 
   const setField = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
+  // Expose openLogin so EventCard / Gallery can call it
+  openLoginModal = () => {
+    setError(""); setForm({ email: "", password: "" }); setLoginOpen(true);
+  };
+
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", fn);
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  // Close profile dropdown on outside click
   useEffect(() => {
     const fn = () => setDropOpen(false);
     document.addEventListener("click", fn);
     return () => document.removeEventListener("click", fn);
   }, []);
 
-  // Close modal on Escape key
   useEffect(() => {
     const fn = (e) => { if (e.key === "Escape") closeLogin(); };
     document.addEventListener("keydown", fn);
     return () => document.removeEventListener("keydown", fn);
   }, []);
 
-  const openLogin = () => {
-    setError("");
-    setForm({ email: "", password: "" });
-    setLoginOpen(true);
-  };
-
-  const closeLogin = () => {
-    setLoginOpen(false);
-    setError("");
-  };
+  const closeLogin = () => { setLoginOpen(false); setError(""); };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-    if (!form.email || !form.password) {
-      setError("Both fields are required.");
-      return;
-    }
+    if (!form.email || !form.password) { setError("Both fields are required."); return; }
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5001/api/auth/login", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(form),
-}).then((r) => r.json());
+      const res = await loginUser(form);
       if (res.success) {
         localStorage.setItem("sem_token", res.token);
         login(res.user);
@@ -127,13 +106,8 @@ export default function Navbar() {
     if (location.pathname === "/Register") return "register";
     return "home";
   };
-  const active = getActive();
 
-  const handleLogout = () => {
-    logout();
-    localStorage.removeItem("sem_token");
-    navigate("/");
-  };
+  const handleLogout = () => { logout(); localStorage.removeItem("sem_token"); navigate("/"); };
 
   const links = [
     { id: "home",     label: "Home",     fn: () => scrollTo("home") },
@@ -143,10 +117,12 @@ export default function Navbar() {
     { id: "contact",  label: "Contact",  fn: () => scrollTo("contact") },
   ];
 
+  const active = getActive();
+
   return (
     <>
       <nav style={{
-        position: "sticky", top: 0, left: 0, right: 0, zIndex: 999, height: 64,
+        position: "sticky", top: 0, zIndex: 999, height: 64,
         background: scrolled ? "rgba(13,27,42,0.96)" : "rgba(13,27,42,0.85)",
         backdropFilter: "blur(10px)",
         borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "none",
@@ -155,14 +131,8 @@ export default function Navbar() {
         padding: "0 40px", boxSizing: "border-box",
       }}>
         {/* Logo */}
-        <div
-          style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
-          onClick={() => scrollTo("home")}
-        >
-          <div style={{
-            width: 34, height: 34, borderRadius: 8, background: C.blue,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => scrollTo("home")}>
+          <div style={{ width: 34, height: 34, borderRadius: 8, background: C.blue, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
               <rect x="3" y="4" width="18" height="18" rx="2"/>
               <line x1="16" y1="2" x2="16" y2="6"/>
@@ -196,9 +166,8 @@ export default function Navbar() {
             </button>
           ))}
 
-          {/* Auth section */}
           {isLoggedIn ? (
-            // Profile dropdown (logged in)
+            // ── Profile dropdown (only name + sign out) ──
             <div style={{ position: "relative", marginLeft: 8 }} onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => setDropOpen((v) => !v)}
@@ -215,8 +184,7 @@ export default function Navbar() {
                 onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255,255,255,0.10)"}
               >
                 <div style={{
-                  width: 26, height: 26, borderRadius: "50%",
-                  background: C.blue,
+                  width: 26, height: 26, borderRadius: "50%", background: C.blue,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 12, fontWeight: 700,
                 }}>
@@ -237,10 +205,12 @@ export default function Navbar() {
                   minWidth: 180, overflow: "hidden",
                   border: "1px solid #e2e8f0", zIndex: 1000,
                 }}>
+                  {/* Name header */}
                   <div style={{ padding: "12px 16px", borderBottom: "1px solid #f1f5f9" }}>
                     <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: "#0f172a" }}>{user?.name}</p>
-                    <p style={{ margin: "2px 0 0", fontSize: 11, color: "#94a3b8" }}>{user?.role}</p>
+                    <p style={{ margin: "2px 0 0", fontSize: 11, color: "#94a3b8" }}>{user?.email}</p>
                   </div>
+                  {/* Admin/committee dashboards */}
                   {user?.role === "admin" && (
                     <button onClick={() => { setDropOpen(false); navigate("/AdminDashboard"); }} style={dropItemStyle}>
                       🛡 Admin Dashboard
@@ -251,9 +221,7 @@ export default function Navbar() {
                       📋 Committee Dashboard
                     </button>
                   )}
-                  <button onClick={() => { setDropOpen(false); navigate("/Events"); }} style={dropItemStyle}>
-                    📅 My Registrations
-                  </button>
+                  {/* Sign out */}
                   <div style={{ borderTop: "1px solid #f1f5f9" }}>
                     <button onClick={handleLogout} style={{ ...dropItemStyle, color: "#ef4444" }}>
                       🚪 Sign Out
@@ -263,12 +231,11 @@ export default function Navbar() {
               )}
             </div>
           ) : (
-            // Single Login button → opens modal
+            // ── Single Login button ──
             <button
-              onClick={openLogin}
+              onClick={() => { setError(""); setForm({ email: "", password: "" }); setLoginOpen(true); }}
               style={{
-                marginLeft: 8,
-                padding: "7px 22px", background: C.blue,
+                marginLeft: 8, padding: "7px 22px", background: C.blue,
                 border: "none", borderRadius: 8, color: "#fff",
                 fontWeight: 700, fontSize: 14, cursor: "pointer",
                 fontFamily: "system-ui", transition: "background 0.2s",
@@ -282,50 +249,31 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ── Login Modal Overlay ── */}
+      {/* ── Login Modal ── */}
       {loginOpen && (
-        <div
-          onClick={closeLogin}
-          style={{
-            position: "fixed", inset: 0, zIndex: 1100,
-            background: "rgba(13,27,42,0.65)",
-            backdropFilter: "blur(4px)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: 24,
-            animation: "fadeIn 0.18s ease",
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "#fff", borderRadius: 20,
-              boxShadow: "0 24px 64px rgba(0,0,0,0.22)",
-              padding: "44px 40px", width: "100%", maxWidth: 420,
-              animation: "slideUp 0.22s ease",
-              position: "relative",
-            }}
-          >
-            {/* Close button */}
-            <button
-              onClick={closeLogin}
-              style={{
-                position: "absolute", top: 16, right: 16,
-                background: "#f1f5f9", border: "none", borderRadius: "50%",
-                width: 32, height: 32, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 15, color: "#64748b", transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "#e2e8f0"}
-              onMouseLeave={(e) => e.currentTarget.style.background = "#f1f5f9"}
-            >
-              ✕
-            </button>
+        <div onClick={closeLogin} style={{
+          position: "fixed", inset: 0, zIndex: 1100,
+          background: "rgba(13,27,42,0.65)", backdropFilter: "blur(4px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 24, animation: "fadeIn 0.18s ease",
+        }}>
+          <div onClick={(e) => e.stopPropagation()} style={{
+            background: "#fff", borderRadius: 20,
+            boxShadow: "0 24px 64px rgba(0,0,0,0.22)",
+            padding: "44px 40px", width: "100%", maxWidth: 420,
+            animation: "slideUp 0.22s ease", position: "relative",
+          }}>
+            <button onClick={closeLogin} style={{
+              position: "absolute", top: 16, right: 16,
+              background: "#f1f5f9", border: "none", borderRadius: "50%",
+              width: 32, height: 32, cursor: "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 15, color: "#64748b",
+            }}>✕</button>
 
-            {/* Header */}
             <div style={{ textAlign: "center", marginBottom: 28 }}>
               <div style={{
-                width: 52, height: 52, borderRadius: 12,
-                background: C.navyDark,
+                width: 52, height: 52, borderRadius: 12, background: C.navyDark,
                 display: "flex", alignItems: "center", justifyContent: "center",
                 margin: "0 auto 14px",
               }}>
@@ -336,119 +284,69 @@ export default function Navbar() {
                   <line x1="3" y1="10" x2="21" y2="10"/>
                 </svg>
               </div>
-              <h2 style={{ margin: "0 0 6px", fontSize: 22, fontWeight: 800, color: "#0f172a", fontFamily: "Georgia, serif" }}>
-                Welcome Back
-              </h2>
-              <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>
-                Sign in to Smart Event Management
-              </p>
+              <h2 style={{ margin: "0 0 6px", fontSize: 22, fontWeight: 800, color: "#0f172a", fontFamily: "Georgia, serif" }}>Welcome Back</h2>
+              <p style={{ margin: 0, fontSize: 13, color: "#64748b" }}>Sign in to Smart Event Management</p>
             </div>
 
-            {/* Error */}
             {error && (
               <div style={{
                 background: "#fef2f2", border: "1px solid #fecaca",
                 borderRadius: 8, padding: "10px 14px",
-                fontSize: 13, color: "#ef4444", fontWeight: 600,
-                marginBottom: 18,
-              }}>
-                ⚠ {error}
-              </div>
+                fontSize: 13, color: "#ef4444", fontWeight: 600, marginBottom: 18,
+              }}>⚠ {error}</div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleLogin}>
               <div style={{ marginBottom: 16 }}>
                 <label style={labelStyle}>📧 Email Address</label>
-                <FocusInput
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setField("email", e.target.value)}
-                  placeholder="you@example.com"
-                />
+                <FocusInput type="email" value={form.email} onChange={(e) => setField("email", e.target.value)} placeholder="you@example.com" />
               </div>
-
               <div style={{ marginBottom: 22 }}>
                 <label style={labelStyle}>🔒 Password</label>
                 <div style={{ position: "relative" }}>
-                  <FocusInput
-                    type={showPass ? "text" : "password"}
-                    value={form.password}
-                    onChange={(e) => setField("password", e.target.value)}
-                    placeholder="••••••••"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPass((v) => !v)}
-                    style={{
-                      position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
-                      background: "none", border: "none", cursor: "pointer",
-                      fontSize: 12, color: "#94a3b8", fontWeight: 600,
-                    }}
-                  >
-                    {showPass ? "Hide" : "Show"}
-                  </button>
+                  <FocusInput type={showPass ? "text" : "password"} value={form.password} onChange={(e) => setField("password", e.target.value)} placeholder="••••••••" />
+                  <button type="button" onClick={() => setShowPass((v) => !v)} style={{
+                    position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", cursor: "pointer", fontSize: 12, color: "#94a3b8", fontWeight: 600,
+                  }}>{showPass ? "Hide" : "Show"}</button>
                 </div>
               </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                style={{
-                  width: "100%", padding: "13px 0",
-                  background: loading ? "#94a3b8" : C.navyDark,
-                  color: "#fff", border: "none", borderRadius: 8,
-                  fontWeight: 800, fontSize: 15,
-                  cursor: loading ? "not-allowed" : "pointer",
-                  fontFamily: "'Segoe UI', sans-serif",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  transition: "background 0.2s",
-                }}
+              <button type="submit" disabled={loading} style={{
+                width: "100%", padding: "13px 0",
+                background: loading ? "#94a3b8" : C.navyDark,
+                color: "#fff", border: "none", borderRadius: 8,
+                fontWeight: 800, fontSize: 15,
+                cursor: loading ? "not-allowed" : "pointer",
+                fontFamily: "'Segoe UI', sans-serif",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                transition: "background 0.2s",
+              }}
                 onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#0f2440"; }}
                 onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = C.navyDark; }}
               >
-                {loading ? (
-                  <>
-                    <span style={{
-                      width: 16, height: 16,
-                      border: "2px solid #ffffff60", borderTop: "2px solid #fff",
-                      borderRadius: "50%", display: "inline-block",
-                      animation: "spin 0.8s linear infinite",
-                    }} />
-                    Signing in...
-                  </>
-                ) : "Sign In →"}
+                {loading ? (<><span style={{ width: 16, height: 16, border: "2px solid #ffffff60", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />Signing in...</>) : "Sign In →"}
               </button>
             </form>
 
-            {/* Divider */}
             <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "22px 0" }}>
               <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
               <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>NEW USER?</span>
               <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
             </div>
 
-            {/* Register button */}
             <button
               onClick={() => { closeLogin(); navigate("/Register"); }}
               style={{
-                width: "100%", padding: "12px 0",
-                background: "transparent",
-                border: `1.5px solid ${C.navyDark}`,
-                borderRadius: 8, color: C.navyDark,
+                width: "100%", padding: "12px 0", background: "transparent",
+                border: `1.5px solid ${C.navyDark}`, borderRadius: 8, color: C.navyDark,
                 fontWeight: 700, fontSize: 14, cursor: "pointer",
-                fontFamily: "'Segoe UI', sans-serif",
-                transition: "all 0.2s",
+                fontFamily: "'Segoe UI', sans-serif", transition: "all 0.2s",
               }}
               onMouseEnter={(e) => { e.currentTarget.style.background = C.navyDark; e.currentTarget.style.color = "#fff"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.navyDark; }}
             >
               Don't have an account? Register
             </button>
-
-            <p style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 18, lineHeight: 1.6 }}>
-              Committee members & Admins use their assigned credentials.
-            </p>
           </div>
         </div>
       )}
@@ -468,7 +366,7 @@ const dropItemStyle = {
   textAlign: "left", cursor: "pointer",
   fontSize: 13, fontWeight: 600,
   color: "#0f172a", fontFamily: "system-ui",
-  display: "block", transition: "background 0.15s",
+  display: "block",
 };
 
 const labelStyle = {
