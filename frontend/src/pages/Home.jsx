@@ -213,6 +213,6 @@ export default function Home() {
       <Hero navigate={navigate}/>
       <CalendarSection/>
       <ContactSection/>
-    </div>
+    </div> 
   );
 }

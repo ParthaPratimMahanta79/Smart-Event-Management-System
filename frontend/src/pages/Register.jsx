@@ -1,544 +1,247 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { registerUser } from "../services/api";
 
-const styles = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
-  @import url('https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css');
-
-  :root {
-    --navy: #1a2235;
-    --navy-light: #243047;
-    --blue-accent: #4a7cf7;
-    --blue-hover: #3a6be0;
-    --white: #ffffff;
-    --muted: rgba(255,255,255,0.55);
-    --border: rgba(255,255,255,0.12);
-    --input-bg: rgba(255,255,255,0.06);
-    --error: #ff6b6b;
-    --success: #4ade80;
-  }
-
-  .reg-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10, 14, 26, 0.75);
-    backdrop-filter: blur(6px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    animation: fadeIn 0.25s ease;
-    padding: 20px;
-  }
-
-  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(24px) scale(0.97); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .reg-card {
-    background: var(--navy);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    width: 100%;
-    max-width: 460px;
-    padding: 40px 40px 36px;
-    box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(74,124,247,0.08);
-    animation: slideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .reg-card::-webkit-scrollbar { width: 4px; }
-  .reg-card::-webkit-scrollbar-track { background: transparent; }
-  .reg-card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-  .reg-header {
-    text-align: center;
-    margin-bottom: 28px;
-  }
-
-  .reg-logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 18px;
-  }
-
-  .reg-logo-icon {
-    width: 36px;
-    height: 36px;
-    background: var(--blue-accent);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: var(--white);
-  }
-
-  .reg-logo-text {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--white);
-  }
-
-  .reg-logo-text span { font-weight: 300; }
-
-  .reg-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--white);
-    margin: 0 0 6px;
-  }
-
-  .reg-subtitle {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--muted);
-    margin: 0;
-  }
-
-  .reg-section-label {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    margin-top: 4px;
-  }
-
-  .reg-section-label::before,
-  .reg-section-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .reg-section-label span {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  .reg-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-  }
-
-  .reg-field {
-    margin-bottom: 16px;
-  }
-
-  .reg-label {
-    display: block;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    margin-bottom: 7px;
-  }
-
-  .reg-input-wrap {
-    position: relative;
-  }
-
-  .reg-icon {
-    position: absolute;
-    left: 13px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--muted);
-    font-size: 16px;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-  }
-
-  .reg-input {
-    width: 100%;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 11px 13px 11px 40px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--white);
-    outline: none;
-    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
-  }
-
-  .reg-input::placeholder { color: rgba(255,255,255,0.22); }
-
-  .reg-input:focus {
-    border-color: var(--blue-accent);
-    background: rgba(74,124,247,0.06);
-    box-shadow: 0 0 0 3px rgba(74,124,247,0.12);
-  }
-
-  .reg-input.error { border-color: var(--error); }
-  .reg-input.valid { border-color: var(--success); }
-
-  .reg-error { font-family: 'DM Sans', sans-serif; font-size: 11.5px; color: var(--error); margin-top: 4px; }
-
-  .strength-bar {
-    display: flex;
-    gap: 4px;
-    margin-top: 8px;
-  }
-
-  .strength-seg {
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
-    background: rgba(255,255,255,0.1);
-    transition: background 0.3s;
-  }
-
-  .strength-seg.weak { background: #ef4444; }
-  .strength-seg.fair { background: #f59e0b; }
-  .strength-seg.strong { background: #22c55e; }
-
-  .strength-label {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 4px;
-  }
-
-  .eye-btn {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 0;
-    transition: color 0.2s;
-    display: flex;
-    align-items: center;
-  }
-  .eye-btn:hover { color: var(--white); }
-
-  .reg-terms {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 22px;
-    margin-top: 4px;
-  }
-
-  .reg-terms-check {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--blue-accent);
-    cursor: pointer;
-    margin-top: 2px;
-    flex-shrink: 0;
-  }
-
-  .reg-terms-text {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
-
-  .reg-terms-link {
-    color: var(--blue-accent);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    transition: opacity 0.2s;
-  }
-  .reg-terms-link:hover { opacity: 0.75; }
-
-  .reg-btn {
-    width: 100%;
-    padding: 13px;
-    background: var(--blue-accent);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-    box-shadow: 0 4px 20px rgba(74,124,247,0.35);
-    letter-spacing: 0.02em;
-  }
-
-  .reg-btn:hover:not(:disabled) {
-    background: var(--blue-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 24px rgba(74,124,247,0.45);
-  }
-
-  .reg-btn:disabled { opacity: 0.7; cursor: not-allowed; }
-
-  .reg-btn-loader {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .spinner {
-    width: 15px; height: 15px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: white;
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .reg-footer {
-    text-align: center;
-    margin-top: 20px;
-  }
-
-  .reg-footer p {
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--muted);
-    margin: 0;
-  }
-
-  .reg-footer-link {
-    color: var(--blue-accent);
-    background: none;
-    border: none;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0;
-    transition: opacity 0.2s;
-  }
-  .reg-footer-link:hover { opacity: 0.75; }
-
-  .reg-close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid var(--border);
-    color: var(--muted);
-    width: 30px;
-    height: 30px;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    transition: background 0.2s, color 0.2s;
-  }
-  .reg-close:hover { background: rgba(255,255,255,0.1); color: var(--white); }
-`;
-
-function getStrength(pw) {
-  if (!pw) return 0;
-  let s = 0;
-  if (pw.length >= 8) s++;
-  if (/[A-Z]/.test(pw)) s++;
-  if (/[0-9]/.test(pw)) s++;
-  if (/[^A-Za-z0-9]/.test(pw)) s++;
-  return s;
+function FocusInput({ type = "text", value, onChange, placeholder, autoComplete = "off" }) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      autoComplete={autoComplete}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={{
+        width: "100%", boxSizing: "border-box", padding: "11px 14px",
+        border: `1.5px solid ${focused ? "#1a3557" : "#e2e8f0"}`,
+        borderRadius: 8, fontSize: 14, color: "#0f172a",
+        background: "#fff", outline: "none",
+        fontFamily: "'Segoe UI', sans-serif",
+        transition: "border-color 0.15s",
+      }}
+    />
+  );
 }
 
-const strengthLabels = ["", "Weak", "Fair", "Good", "Strong"];
-const strengthClasses = ["", "weak", "fair", "strong", "strong"];
+function Field({ label, icon, error, children }) {
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <label style={{
+        display: "block", fontSize: 12, fontWeight: 700,
+        color: "#475569", marginBottom: 6, letterSpacing: "0.04em",
+        textTransform: "uppercase",
+      }}>
+        {icon && <span style={{ marginRight: 6 }}>{icon}</span>}
+        {label}
+      </label>
+      {children}
+      {error && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#ef4444", fontWeight: 500 }}>⚠ {error}</p>}
+    </div>
+  );
+}
 
-export default function Register({ onClose, onSwitchToLogin }) {
+export default function Register() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [form, setForm] = useState({
-    firstName: "", lastName: "", email: "",
-    phone: "", password: "", confirmPassword: ""
+    name: "", email: "", password: "", confirmPassword: "", phone: "",
   });
   const [errors, setErrors] = useState({});
-  const [showPass, setShowPass] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [showPass, setShowPass] = useState(false);
 
-  const strength = getStrength(form.password);
+  const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
   const validate = () => {
     const e = {};
-    if (!form.firstName.trim()) e.firstName = "Required";
-    if (!form.lastName.trim()) e.lastName = "Required";
-    if (!form.email) e.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Invalid email";
-    if (!form.phone) e.phone = "Phone is required";
-    else if (!/^\+?[\d\s\-]{7,15}$/.test(form.phone)) e.phone = "Invalid number";
-    if (!form.password) e.password = "Password is required";
-    else if (form.password.length < 6) e.password = "Min 6 characters";
-    if (form.password !== form.confirmPassword) e.confirmPassword = "Passwords don't match";
-    if (!agreed) e.terms = "You must accept the terms";
+    if (!form.name.trim()) e.name = "Full name is required";
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = "Valid email is required";
+    if (!form.phone.trim() || !/^\d{10}$/.test(form.phone.replace(/\s/g, ""))) e.phone = "Valid 10-digit phone required";
+    if (form.password.length < 6) e.password = "Password must be at least 6 characters";
+    if (form.password !== form.confirmPassword) e.confirmPassword = "Passwords do not match";
     return e;
   };
 
-  const handleSubmit = async () => {
-    const e = validate();
-    if (Object.keys(e).length) { setErrors(e); return; }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setApiError("");
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setErrors({});
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1600));
-    setLoading(false);
-    alert("Account created! Welcome aboard.");
-    onClose?.();
-  };
-
-  const set = (field) => (ev) => {
-    setForm(f => ({ ...f, [field]: ev.target.value }));
-    setErrors(e => ({ ...e, [field]: "" }));
+    try {
+      const res = await registerUser({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+      });
+      if (res.success) {
+        localStorage.setItem("sem_token", res.token);
+        login(res.user);
+        navigate("/", { replace: true });
+      } else {
+        setApiError(res.message || "Registration failed. Please try again.");
+      }
+    } catch {
+      setApiError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <>
-      <style>{styles}</style>
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
-      <div className="reg-overlay" onClick={(e) => e.target === e.currentTarget && onClose?.()}>
-        <div className="reg-card">
-          <button className="reg-close" onClick={onClose} aria-label="Close">
-            <i className="ti ti-x" aria-hidden="true" />
-          </button>
-
-          <div className="reg-header">
-            <div className="reg-logo">
-              <div className="reg-logo-icon">
-                <i className="ti ti-calendar-event" aria-hidden="true" />
-              </div>
-              <div className="reg-logo-text"><strong>Smart Event</strong> <span>Management</span></div>
-            </div>
-            <h2 className="reg-title">Create an Account</h2>
-            <p className="reg-subtitle">Join thousands of event organizers</p>
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "center",
+      minHeight: "calc(100vh - 64px)", padding: "40px 24px",
+      background: "#f5f6fa", fontFamily: "'Segoe UI', sans-serif",
+    }}>
+      <div style={{
+        background: "#fff", borderRadius: 16,
+        boxShadow: "0 8px 40px rgba(0,0,0,0.10)",
+        padding: "48px 40px", width: "100%", maxWidth: 460,
+      }}>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{
+            width: 52, height: 52, borderRadius: 12, background: "#1a3557",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            margin: "0 auto 16px",
+          }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
           </div>
-
-          <div className="reg-section-label"><span>Personal Info</span></div>
-
-          <div className="reg-row">
-            <div className="reg-field">
-              <label className="reg-label">First Name</label>
-              <div className="reg-input-wrap">
-                <span className="reg-icon"><i className="ti ti-user" aria-hidden="true" /></span>
-                <input className={`reg-input${errors.firstName ? " error" : ""}`}
-                  type="text" placeholder="John" value={form.firstName} onChange={set("firstName")} />
-              </div>
-              {errors.firstName && <p className="reg-error">{errors.firstName}</p>}
-            </div>
-
-            <div className="reg-field">
-              <label className="reg-label">Last Name</label>
-              <div className="reg-input-wrap">
-                <span className="reg-icon"><i className="ti ti-user" aria-hidden="true" /></span>
-                <input className={`reg-input${errors.lastName ? " error" : ""}`}
-                  type="text" placeholder="Doe" value={form.lastName} onChange={set("lastName")} />
-              </div>
-              {errors.lastName && <p className="reg-error">{errors.lastName}</p>}
-            </div>
-          </div>
-
-          <div className="reg-field">
-            <label className="reg-label">Email Address</label>
-            <div className="reg-input-wrap">
-              <span className="reg-icon"><i className="ti ti-mail" aria-hidden="true" /></span>
-              <input className={`reg-input${errors.email ? " error" : ""}`}
-                type="email" placeholder="you@example.com" value={form.email} onChange={set("email")} />
-            </div>
-            {errors.email && <p className="reg-error">{errors.email}</p>}
-          </div>
-
-          <div className="reg-field">
-            <label className="reg-label">Phone Number</label>
-            <div className="reg-input-wrap">
-              <span className="reg-icon"><i className="ti ti-phone" aria-hidden="true" /></span>
-              <input className={`reg-input${errors.phone ? " error" : ""}`}
-                type="tel" placeholder="+91 98765 43210" value={form.phone} onChange={set("phone")} />
-            </div>
-            {errors.phone && <p className="reg-error">{errors.phone}</p>}
-          </div>
-
-          <div className="reg-section-label"><span>Security</span></div>
-
-          <div className="reg-field">
-            <label className="reg-label">Password</label>
-            <div className="reg-input-wrap">
-              <span className="reg-icon"><i className="ti ti-lock" aria-hidden="true" /></span>
-              <input className={`reg-input${errors.password ? " error" : ""}`}
-                type={showPass ? "text" : "password"}
-                placeholder="Min 6 characters" value={form.password} onChange={set("password")} />
-              <button className="eye-btn" onClick={() => setShowPass(s => !s)} aria-label={showPass ? "Hide password" : "Show password"}>
-                <i className={`ti ${showPass ? "ti-eye-off" : "ti-eye"}`} aria-hidden="true" />
-              </button>
-            </div>
-            {form.password && (
-              <>
-                <div className="strength-bar">
-                  {[1,2,3,4].map(i => (
-                    <div key={i} className={`strength-seg${strength >= i ? ` ${strengthClasses[strength]}` : ""}`} />
-                  ))}
-                </div>
-                <p className="strength-label">{strengthLabels[strength]} password</p>
-              </>
-            )}
-            {errors.password && <p className="reg-error">{errors.password}</p>}
-          </div>
-
-          <div className="reg-field">
-            <label className="reg-label">Confirm Password</label>
-            <div className="reg-input-wrap">
-              <span className="reg-icon"><i className="ti ti-lock" aria-hidden="true" /></span>
-              <input className={`reg-input${errors.confirmPassword ? " error" : ""}`}
-                type={showConfirm ? "text" : "password"}
-                placeholder="Repeat your password" value={form.confirmPassword} onChange={set("confirmPassword")} />
-              <button className="eye-btn" onClick={() => setShowConfirm(s => !s)} aria-label={showConfirm ? "Hide password" : "Show password"}>
-                <i className={`ti ${showConfirm ? "ti-eye-off" : "ti-eye"}`} aria-hidden="true" />
-              </button>
-            </div>
-            {errors.confirmPassword && <p className="reg-error">{errors.confirmPassword}</p>}
-          </div>
-
-          <div className="reg-terms">
-            <input className="reg-terms-check" type="checkbox"
-              checked={agreed} onChange={e => { setAgreed(e.target.checked); setErrors(er => ({...er, terms: ""})); }} />
-            <span className="reg-terms-text">
-              I agree to the <button className="reg-terms-link">Terms of Service</button> and{" "}
-              <button className="reg-terms-link">Privacy Policy</button>
-            </span>
-          </div>
-          {errors.terms && <p className="reg-error" style={{marginBottom: 14}}>{errors.terms}</p>}
-
-          <button className="reg-btn" onClick={handleSubmit} disabled={loading}>
-            {loading
-              ? <span className="reg-btn-loader"><span className="spinner" /> Creating account…</span>
-              : "Create Account"}
-          </button>
-
-          <div className="reg-footer">
-            <p>Already have an account?{" "}
-              <button className="reg-footer-link" onClick={onSwitchToLogin}>Sign in</button>
-            </p>
-          </div>
+          <h1 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800, color: "#0f172a", fontFamily: "Georgia, serif" }}>
+            Create Account
+          </h1>
+          <p style={{ margin: 0, fontSize: 14, color: "#64748b" }}>
+            Register to participate in campus events
+          </p>
         </div>
+
+        {/* API Error */}
+        {apiError && (
+          <div style={{
+            background: "#fef2f2", border: "1px solid #fecaca",
+            borderRadius: 8, padding: "10px 14px",
+            fontSize: 13, color: "#ef4444", fontWeight: 600, marginBottom: 20,
+          }}>
+            ⚠ {apiError}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} autoComplete="off">
+          <Field label="Full Name" icon="👤" error={errors.name}>
+            <FocusInput
+              value={form.name}
+              onChange={(e) => set("name", e.target.value)}
+              placeholder="Rahul Sharma"
+              autoComplete="name"
+            />
+          </Field>
+
+          <Field label="Email Address" icon="📧" error={errors.email}>
+            <FocusInput
+              type="email"
+              value={form.email}
+              onChange={(e) => set("email", e.target.value)}
+              placeholder="rahul@example.com"
+              autoComplete="email"
+            />
+          </Field>
+
+          <Field label="Phone Number" icon="📱" error={errors.phone}>
+            <FocusInput
+              type="tel"
+              value={form.phone}
+              onChange={(e) => set("phone", e.target.value)}
+              placeholder="98XXXXXXXX"
+              autoComplete="tel"
+            />
+          </Field>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
+            <Field label="Password" icon="🔒" error={errors.password}>
+              <div style={{ position: "relative" }}>
+                <FocusInput
+                  type={showPass ? "text" : "password"}
+                  value={form.password}
+                  onChange={(e) => set("password", e.target.value)}
+                  placeholder="Min 6 chars"
+                  autoComplete="new-password"
+                />
+                <button type="button" onClick={() => setShowPass((v) => !v)} style={{
+                  position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: 12, color: "#94a3b8",
+                }}>{showPass ? "Hide" : "Show"}</button>
+              </div>
+            </Field>
+            <Field label="Confirm" error={errors.confirmPassword}>
+              <FocusInput
+                type={showPass ? "text" : "password"}
+                value={form.confirmPassword}
+                onChange={(e) => set("confirmPassword", e.target.value)}
+                placeholder="Repeat password"
+                autoComplete="new-password"
+              />
+            </Field>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              width: "100%", padding: "13px 0",
+              background: loading ? "#94a3b8" : "#1a3557",
+              color: "#fff", border: "none", borderRadius: 8,
+              fontWeight: 800, fontSize: 15,
+              cursor: loading ? "not-allowed" : "pointer",
+              fontFamily: "'Segoe UI', sans-serif",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              transition: "background 0.2s", marginTop: 8,
+            }}
+            onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#0f2440"; }}
+            onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = "#1a3557"; }}
+          >
+            {loading ? (
+              <>
+                <span style={{ width: 16, height: 16, border: "2px solid #ffffff60", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+                Creating Account...
+              </>
+            ) : "Create Account →"}
+          </button>
+        </form>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "24px 0" }}>
+          <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
+          <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>ALREADY HAVE AN ACCOUNT?</span>
+          <div style={{ flex: 1, height: 1, background: "#e2e8f0" }} />
+        </div>
+
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            width: "100%", padding: "12px 0",
+            background: "transparent", border: "1.5px solid #1a3557",
+            borderRadius: 8, color: "#1a3557",
+            fontWeight: 700, fontSize: 14, cursor: "pointer",
+            fontFamily: "'Segoe UI', sans-serif", transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "#1a3557"; e.currentTarget.style.color = "#fff"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#1a3557"; }}
+        >
+          ← Go Back
+        </button>
       </div>
-    </>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
   );
 }
