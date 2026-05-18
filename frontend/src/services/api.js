@@ -54,7 +54,7 @@ export const getGallery = () =>
 export const uploadPhoto = (formData) =>
   fetch(`${BASE}/gallery/upload`, {
     method: "POST",
-    headers: { Authorization: `Bearer ${getToken()}` }, // no Content-Type for FormData
+    headers: { Authorization: `Bearer ${getToken()}` },
     body: formData,
   }).then((r) => r.json());
 
@@ -119,3 +119,27 @@ export const updatePhotoStatus = (id, status) =>
     headers: authHeaders(),
     body: JSON.stringify({ status }),
   }).then((r) => r.json());
+
+// ── Admin (missing exports) ───────────────────────────────────────────────────
+export const createCommittee = (data) =>
+  fetch(`${BASE}/admin/committees`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  }).then((r) => r.json());
+
+export const deleteAdminEvent = (id) =>
+  fetch(`${BASE}/admin/events/${id}`, { method: "DELETE", headers: authHeaders() }).then((r) => r.json());
+
+export const getAdminGallery = () =>
+  fetch(`${BASE}/admin/gallery`, { headers: authHeaders() }).then((r) => r.json());
+
+export const uploadAdminPhoto = (formData) =>
+  fetch(`${BASE}/admin/gallery/upload`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${getToken()}` },
+    body: formData,
+  }).then((r) => r.json());
+
+export const deleteAdminPhoto = (id) =>
+  fetch(`${BASE}/admin/gallery/${id}`, { method: "DELETE", headers: authHeaders() }).then((r) => r.json());

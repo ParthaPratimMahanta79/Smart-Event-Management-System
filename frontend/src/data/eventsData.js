@@ -50,78 +50,7 @@ export const ONGOING_EVENTS = [
 ];
 
 export const UPCOMING_EVENTS = [
-  {
-    id: 1,
-    title: "Inter-Department Football Championship",
-    category: "Sports",
-    committee: "Sports Committee",
-    day: "16", month: "May",
-    time: "11:00 AM – 4:00 PM",
-    location: "Dhemaji Engineering College",
-    description: "Celebrate Sports Day with an exciting football championship featuring teams from different departments.",
-    image: "/images/Event-image/Football.jpg",
-    isTeam: true,
-  },
-  {
-    id: 2,
-    title: "Kabaddi",
-    category: "Sports",
-    committee: "Sports Committee",
-    day: "16", month: "May",
-    time: "1:00 PM – 5:00 PM",
-    location: "DEC Sports Ground, Dhemaji Engineering College",
-    description: "An action-packed Kabaddi tournament organized as part of the annual Sports Day celebration.",
-    image: "/images/Event-image/kabaddi.jpeg",
-    isTeam: true,
-  },
-  {
-    id: 3,
-    title: "Bootcamp on Competitive Programming",
-    category: "Technology",
-    committee: "Robotics Club",
-    day: "20", month: "May",
-    time: "12:00 PM – 1:30 PM",
-    location: "Seminar Hall, Dhemaji Engineering College",
-    description: "A hands-on competitive programming bootcamp conducted by the Robotics and Coding Club.",
-    image: "/images/Event-image/coding-bootcamp.jpeg",
-    isTeam: false,
-  },
-  {
-    id: 4,
-    title: "InnovateX Ideathon 2026",
-    category: "Technology",
-    committee: "Robotics Club",
-    day: "18", month: "May",
-    time: "10:00 AM – 1:00 PM",
-    location: "Robotics & Coding Club, Dhemaji Engineering College",
-    description: "Join the Ideathon organized by the Robotics and Coding Club to brainstorm innovative tech solutions.",
-    image: "/images/Event-image/ideathon.jpg",
-    isTeam: true,
-  },
-  {
-    id: 5,
-    title: "DEC Esports Showdown",
-    category: "Technology",
-    committee: "Coding Committee",
-    day: "21", month: "May",
-    time: "4:00 PM – 7:00 PM",
-    location: "Seminar Hall, Dhemaji Engineering College",
-    description: "Get ready for an exciting esports competition featuring popular multiplayer games and team battles.",
-    image: "/images/Event-image/esports.jpg",
-    isTeam: true,
-  },
-  {
-    id: 6,
-    title: "Farewell Event Volunteer Recruitment",
-    category: "Business",
-    committee: "Cultural Committee",
-    day: "24", month: "May",
-    time: "11:00 AM – 2:00 PM",
-    location: "Auditorium Hall, Dhemaji Engineering College",
-    description: "Volunteers are invited to help organize and manage the upcoming farewell ceremony.",
-    image: "/images/Event-image/farewell.jpeg",
-    isTeam: false,
-  },
+ 
 ];
 
 export const PAST_EVENTS = [
@@ -200,4 +129,4 @@ export const PAST_EVENTS = [
 ];
 
 
-export const ALL_EVENTS = [...ONGOING_EVENTS, ...UPCOMING_EVENTS, ...PAST_EVENTS];
+export const ALL_EVENTS = [...ONGOING_EVENTS,  ...PAST_EVENTS];

@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ALL_EVENTS, COMMITTEES } from "../data/eventsData";
-import { registerForEvent } from "../services/api";
+import { registerForEvent, getEvent } from "../services/api";
 
 const DEPARTMENTS = [
   "Computer Science & Engineering",
@@ -16,7 +16,6 @@ const DEPARTMENTS = [
 
 const YEARS = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
 
-// ── Per-user localStorage helpers (keeps Events.jsx in sync) ──────────────────
 const getUserKey = (userId) => `sem_registered_${userId}`;
 
 const markRegistered = (userId, id) => {
@@ -37,13 +36,31 @@ const isAlreadyRegistered = (userId, id) => {
   } catch { return false; }
 };
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+// Convert a DB event to the shape expected by this form
+const normalizeDbEvent = (e) => {
+  const date = new Date(e.date);
+  return {
+    id: e._id,
+    title: e.title,
+    category: e.category,
+    committee: e.organizer?.name || "Unknown Committee",
+    day: String(date.getDate()).padStart(2, "0"),
+    month: date.toLocaleString("en-IN", { month: "short" }),
+    time: e.time,
+    location: e.venue,
+    description: e.description,
+    image: e.image ? `http://localhost:5001${e.image}` : "",
+    isTeam: false,
+    _status: e.status,
+    _fromDb: true,
+  };
+};
+
 function Field({ label, icon, error, children }) {
   return (
     <div style={{ marginBottom: 20 }}>
       <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-        {icon && <span style={{ marginRight: 6 }}>{icon}</span>}
-        {label}
+        {icon && <span style={{ marginRight: 6 }}>{icon}</span>}{label}
       </label>
       {children}
       {error && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#ef4444", fontWeight: 500 }}>⚠ {error}</p>}
@@ -98,33 +115,66 @@ function SectionLabel({ children, extra }) {
   );
 }
 
-// ── Main Component ─────────────────────────────────────────────────────────────
 export default function EventRegister() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isLoggedIn, user } = useAuth();
 
-  const event = ALL_EVENTS.find(e => String(e.id) === String(id));
-  const committeeInfo = event ? (COMMITTEES[event.committee] || { icon: "🏫", color: "#1a3557" }) : null;
+  const [event, setEvent] = useState(null);
+  const [loadingEvent, setLoadingEvent] = useState(true);
+
+  // First try static data, then fall back to backend
+  useEffect(() => {
+    const staticEvent = ALL_EVENTS.find(e => String(e.id) === String(id));
+    if (staticEvent) {
+      setEvent(staticEvent);
+      setLoadingEvent(false);
+    } else {
+      // Try fetching from backend (DB event)
+      getEvent(id)
+        .then(res => {
+          if (res.success && res.event) {
+            setEvent(normalizeDbEvent(res.event));
+          } else {
+            setEvent(null);
+          }
+        })
+        .catch(() => setEvent(null))
+        .finally(() => setLoadingEvent(false));
+    }
+  }, [id]);
+
+  const committeeInfo = event ? (COMMITTEES[event.committee] || { icon: "🎪", color: "#1a3557" }) : null;
   const alreadyRegistered = event ? isAlreadyRegistered(user?.id, id) : false;
 
-  const [isTeamEvent, setIsTeamEvent] = useState(event?.isTeam || false);
+  const [isTeamEvent, setIsTeamEvent] = useState(false);
   const [form, setForm] = useState({
-    firstName:  user?.name?.split(" ")[0] || "",
-    lastName:   user?.name?.split(" ").slice(1).join(" ") || "",
-    email:      user?.email || "",
-    phone:      user?.phone || "",
-    studentId:  "",
-    department: "",
-    year:       "",
-    teamName:   "",
-    members:    [{ name: "", studentId: "", department: "" }],
+    firstName: "", lastName: "", email: "", phone: "",
+    studentId: "", department: "", year: "",
+    teamName: "", members: [{ name: "", studentId: "", department: "" }],
   });
-  const [errors, setErrors]       = useState({});
+  const [errors, setErrors]         = useState({});
   const [submitting, setSubmitting] = useState(false);
-  const [apiError, setApiError]   = useState("");
+  const [apiError, setApiError]     = useState("");
 
-  // ── Guards ─────────────────────────────────────────────────────────────────
+  // Prefill form once user is known
+  useEffect(() => {
+    if (user) {
+      setForm(f => ({
+        ...f,
+        firstName: user.name?.split(" ")[0] || "",
+        lastName:  user.name?.split(" ").slice(1).join(" ") || "",
+        email:     user.email || "",
+        phone:     user.phone || "",
+      }));
+    }
+  }, [user]);
+
+  // Set isTeamEvent once event loads
+  useEffect(() => {
+    if (event) setIsTeamEvent(event.isTeam || false);
+  }, [event]);
+
   if (!isLoggedIn) {
     return (
       <div style={{ minHeight: "calc(100vh - 64px)", background: "#f5f6fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Segoe UI', sans-serif" }}>
@@ -140,6 +190,17 @@ export default function EventRegister() {
             style={{ width: "100%", padding: "12px 0", background: "transparent", border: "1.5px solid #1a3557", borderRadius: 8, color: "#1a3557", fontWeight: 700, fontSize: 14, cursor: "pointer" }}>
             ← Back to Events
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadingEvent) {
+    return (
+      <div style={{ minHeight: "calc(100vh - 64px)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Segoe UI', sans-serif" }}>
+        <div style={{ textAlign: "center", color: "#94a3b8" }}>
+          <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+          <p>Loading event...</p>
         </div>
       </div>
     );
@@ -171,7 +232,6 @@ export default function EventRegister() {
     );
   }
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
   const set = (key, val) => setForm(f => ({ ...f, [key]: val }));
   const updateMember = (idx, key, val) => {
     const members = [...form.members];
@@ -204,16 +264,11 @@ export default function EventRegister() {
   const handleSubmit = async () => {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
-
-    setSubmitting(true);
-    setApiError("");
-
+    setSubmitting(true); setApiError("");
     try {
       const payload = {
-        // ── These two fields let the backend resolve the committee without an ObjectId ──
-        committeeName: event.committee,   // e.g. "Sports Committee"
-        eventTitle:    event.title,        // e.g. "Marathon"
-        // ── Participant details ──
+        committeeName: event.committee,
+        eventTitle:    event.title,
         firstName:  form.firstName,
         lastName:   form.lastName,
         email:      form.email,
@@ -224,31 +279,18 @@ export default function EventRegister() {
         isTeam:     isTeamEvent,
         ...(isTeamEvent && { teamName: form.teamName, members: form.members }),
       };
-
       const res = await registerForEvent(id, payload);
-
-      if (!res.success) {
-        setApiError(res.message || "Registration failed. Please try again.");
-        setSubmitting(false);
-        return;
-      }
-
-      // Mark in per-user localStorage so Events.jsx immediately shows "Registered ✓"
+      if (!res.success) { setApiError(res.message || "Registration failed."); setSubmitting(false); return; }
       markRegistered(user?.id, id);
-
-      // Go straight back to Events — button is already green
       navigate("/Events");
-
-    } catch (err) {
+    } catch {
       setApiError("Network error. Please check your connection and try again.");
       setSubmitting(false);
     }
   };
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ minHeight: "100vh", background: "#f5f6fa", fontFamily: "'Segoe UI', sans-serif", paddingBottom: 60 }}>
-      {/* Top banner */}
       <div style={{ background: "#1a3557", padding: "28px 40px 24px", borderBottom: `4px solid ${committeeInfo.color}` }}>
         <div style={{ maxWidth: 720, margin: "0 auto" }}>
           <button onClick={() => navigate("/Events")} style={{ background: "none", border: "none", color: "#93c5fd", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: 0, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>← Back to Events</button>
@@ -265,11 +307,9 @@ export default function EventRegister() {
         </div>
       </div>
 
-      {/* Form card */}
       <div style={{ maxWidth: 720, margin: "36px auto 0", padding: "0 24px" }}>
         <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 4px 24px rgba(0,0,0,0.08)", overflow: "hidden" }}>
 
-          {/* Personal Info */}
           <div style={{ padding: "28px 32px", borderBottom: "1px solid #f1f5f9" }}>
             <SectionLabel>Personal Information</SectionLabel>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
@@ -280,7 +320,6 @@ export default function EventRegister() {
             <Field label="Phone Number" icon="📱" error={errors.phone}><TextInput type="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="98XXXXXXXX" /></Field>
           </div>
 
-          {/* Academic Info */}
           <div style={{ padding: "28px 32px", borderBottom: "1px solid #f1f5f9" }}>
             <SectionLabel>Academic Details</SectionLabel>
             <Field label="Student ID / Roll No" icon="🎓" error={errors.studentId}><TextInput value={form.studentId} onChange={e => set("studentId", e.target.value)} placeholder="DEC/2022/001" /></Field>
@@ -290,7 +329,6 @@ export default function EventRegister() {
             </div>
           </div>
 
-          {/* Event Info (frozen) */}
           <div style={{ padding: "28px 32px", borderBottom: "1px solid #f1f5f9", background: "#fafbfc" }}>
             <SectionLabel extra="AUTO-FILLED">Event Details</SectionLabel>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
@@ -304,7 +342,6 @@ export default function EventRegister() {
             </div>
           </div>
 
-          {/* Team toggle */}
           <div style={{ padding: "28px 32px", borderBottom: "1px solid #f1f5f9" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: isTeamEvent ? 20 : 0 }}>
               <SectionLabel>Team Registration</SectionLabel>
@@ -344,7 +381,6 @@ export default function EventRegister() {
             {!isTeamEvent && <p style={{ margin: 0, fontSize: 13, color: "#94a3b8" }}>This is a solo event. Toggle above if you want to register as a team.</p>}
           </div>
 
-          {/* Submit */}
           <div style={{ padding: "24px 32px" }}>
             {Object.keys(errors).length > 0 && (
               <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 16px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 16 }}>
@@ -360,10 +396,8 @@ export default function EventRegister() {
               width: "100%", padding: "14px 0",
               background: submitting ? "#94a3b8" : "#1a3557",
               color: "#fff", border: "none", borderRadius: 8,
-              fontWeight: 800, fontSize: 15,
-              cursor: submitting ? "not-allowed" : "pointer",
-              fontFamily: "'Segoe UI', sans-serif",
-              transition: "background 0.2s",
+              fontWeight: 800, fontSize: 15, cursor: submitting ? "not-allowed" : "pointer",
+              fontFamily: "'Segoe UI', sans-serif", transition: "background 0.2s",
               display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
             }}
               onMouseEnter={e => { if (!submitting) e.currentTarget.style.background = "#0f2440"; }}
@@ -371,8 +405,7 @@ export default function EventRegister() {
             >
               {submitting
                 ? <><span style={{ width: 16, height: 16, border: "2px solid #ffffff60", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />Submitting...</>
-                : <>Submit Registration →</>
-              }
+                : <>Submit Registration →</>}
             </button>
             <p style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 12 }}>
               By submitting, you agree to the event rules set by {event.committee}.
