@@ -29,6 +29,96 @@ const fmt = (iso) => iso ? new Date(iso).toLocaleDateString("en-IN", { day: "2-d
 const statusColor = { upcoming: "#1d6fa4", ongoing: "#16a34a", completed: "#64748b", cancelled: "#ef4444" };
 const regStatusColor = { approved: "#15803d", pending: "#d97706", rejected: "#ef4444" };
 
+// ── SVG Icon components ───────────────────────────────────────────────────────
+const IconCalendar = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+
+const IconActivity = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+  </svg>
+);
+
+const IconClipboard = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+  </svg>
+);
+
+const IconUsers = ({ size = 16, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+  </svg>
+);
+
+const IconClock = ({ size = 14, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
+
+const IconMapPin = ({ size = 14, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+  </svg>
+);
+
+const IconImage = ({ size = 28, color = "currentColor" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+    <polyline points="21 15 16 10 5 21"/>
+  </svg>
+);
+
+const IconAlertTriangle = ({ size = 13, color = "#ef4444" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+);
+
+const IconLoader = ({ size = 32, color = "#94a3b8" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
+    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/>
+    <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/>
+  </svg>
+);
+
+const IconInbox = ({ size = 36, color = "#94a3b8" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/>
+    <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
+  </svg>
+);
+
+const IconBuilding = ({ size = 11, color = "#94a3b8" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+  </svg>
+);
+
+const IconPhone = ({ size = 11, color = "#94a3b8" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.56 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+  </svg>
+);
+
+const IconRocket = ({ size = 14, color = "#fff" }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+    <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+    <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+  </svg>
+);
+
 function StatCard({ label, value, sub, icon }) {
   return (
     <div style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 14, padding: "24px 28px", flex: 1, minWidth: 160 }}>
@@ -123,7 +213,11 @@ function CreateEventModal({ onClose, onCreated, committeeName, members }) {
           <button onClick={onClose} style={{ background: "#f1f5f9", border: "none", borderRadius: "50%", width: 32, height: 32, cursor: "pointer", fontSize: 16, color: "#64748b" }}>✕</button>
         </div>
 
-        {error && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 16 }}>⚠ {error}</div>}
+        {error && (
+          <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 14px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+            <IconAlertTriangle size={13} color="#ef4444" /> {error}
+          </div>
+        )}
 
         {/* Image */}
         <div style={{ marginBottom: 18 }}>
@@ -131,7 +225,7 @@ function CreateEventModal({ onClose, onCreated, committeeName, members }) {
           <div onClick={() => fileRef.current.click()} style={{ border: `2px dashed ${preview ? ACCENT : BORDER}`, borderRadius: 10, padding: preview ? 0 : "28px 20px", textAlign: "center", cursor: "pointer", overflow: "hidden", background: "#f8fafc" }}>
             {preview
               ? <img src={preview} alt="preview" style={{ width: "100%", height: 180, objectFit: "cover", display: "block" }} />
-              : <div><div style={{ fontSize: 28, marginBottom: 8 }}>📷</div><div style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>Click to upload event image</div><div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>JPEG, PNG, WEBP — max 5MB</div></div>
+              : <div><div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}><IconImage size={28} color="#94a3b8" /></div><div style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>Click to upload event image</div><div style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>JPEG, PNG, WEBP — max 5MB</div></div>
             }
           </div>
           <input ref={fileRef} type="file" accept="image/*" onChange={handleImage} style={{ display: "none" }} />
@@ -205,8 +299,9 @@ function CreateEventModal({ onClose, onCreated, committeeName, members }) {
 
         <div style={{ display: "flex", gap: 12 }}>
           <button onClick={onClose} style={{ flex: 1, padding: "12px 0", background: "#f1f5f9", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: "pointer", color: "#475569" }}>Cancel</button>
-          <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, padding: "12px 0", background: loading ? "#94a3b8" : NAV, border: "none", borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: loading ? "not-allowed" : "pointer", color: "#fff" }}>
-            {loading ? "Creating..." : "🚀 Create & Publish Event"}
+          <button onClick={handleSubmit} disabled={loading} style={{ flex: 2, padding: "12px 0", background: loading ? "#94a3b8" : NAV, border: "none", borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: loading ? "not-allowed" : "pointer", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <IconRocket size={14} color="#fff" />
+            {loading ? "Creating..." : "Create & Publish Event"}
           </button>
         </div>
       </div>
@@ -247,7 +342,11 @@ function AddMemberModal({ onClose, onAdded }) {
           <h2 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: NAV, fontFamily: "Georgia, serif" }}>Add Member</h2>
           <button onClick={onClose} style={{ background: "#f1f5f9", border: "none", borderRadius: "50%", width: 30, height: 30, cursor: "pointer", fontSize: 15, color: "#64748b" }}>✕</button>
         </div>
-        {error && <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 14 }}>⚠ {error}</div>}
+        {error && (
+          <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 14, display: "flex", alignItems: "center", gap: 6 }}>
+            <IconAlertTriangle size={13} color="#ef4444" /> {error}
+          </div>
+        )}
         <div style={{ marginBottom: 14 }}><label style={labelStyle}>Full Name *</label><input style={inputStyle} value={form.name} onChange={e => set("name", e.target.value)} placeholder="e.g. Rahul Sharma" /></div>
         <div style={{ marginBottom: 14 }}><label style={labelStyle}>Role</label><input style={inputStyle} value={form.role} onChange={e => set("role", e.target.value)} placeholder="e.g. Vice President" /></div>
         <div style={{ marginBottom: 14 }}><label style={labelStyle}>Department</label><input style={inputStyle} value={form.department} onChange={e => set("department", e.target.value)} placeholder="e.g. Computer Science" /></div>
@@ -313,10 +412,10 @@ export default function CommitteeDashboard() {
   if (!isLoggedIn || user?.role !== "committee") return null;
 
   const tabs = [
-    { id: "overview",      label: "📊 Overview" },
-    { id: "events",        label: "📅 Events" },
-    { id: "registrations", label: "📋 Registrations" },
-    { id: "members",       label: "👥 Members" },
+    { id: "overview",      label: "Overview",       Icon: () => <IconActivity size={14} color="currentColor" /> },
+    { id: "events",        label: "Events",          Icon: () => <IconCalendar size={14} color="currentColor" /> },
+    { id: "registrations", label: "Registrations",   Icon: () => <IconClipboard size={14} color="currentColor" /> },
+    { id: "members",       label: "Members",         Icon: () => <IconUsers size={14} color="currentColor" /> },
   ];
 
   return (
@@ -370,8 +469,10 @@ export default function CommitteeDashboard() {
                 background: activeTab === t.id ? "#f5f6fa" : "transparent",
                 color: activeTab === t.id ? NAV : "#93c5fd",
                 fontWeight: 700, fontSize: 13, fontFamily: "'Segoe UI', sans-serif",
-                transition: "all 0.15s",
-              }}>{t.label}</button>
+                transition: "all 0.15s", display: "flex", alignItems: "center", gap: 7,
+              }}>
+                <t.Icon />{t.label}
+              </button>
             ))}
           </div>
         </div>
@@ -381,7 +482,7 @@ export default function CommitteeDashboard() {
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 40px" }}>
         {loading ? (
           <div style={{ textAlign: "center", padding: 80, color: "#94a3b8", fontSize: 14 }}>
-            <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><IconLoader size={32} color="#94a3b8" /></div>
             Loading your dashboard...
           </div>
         ) : (
@@ -390,17 +491,17 @@ export default function CommitteeDashboard() {
             {activeTab === "overview" && (
               <div>
                 <div style={{ display: "flex", gap: 20, marginBottom: 32, flexWrap: "wrap" }}>
-                  <StatCard icon="📅" label="Total Events" value={dashboard?.stats?.totalEvents ?? 0} />
-                  <StatCard icon="🟢" label="Active Events" value={dashboard?.stats?.upcomingEvents ?? 0} sub="ongoing + upcoming" />
-                  <StatCard icon="📝" label="Registrations" value={dashboard?.stats?.totalRegistrations ?? 0} />
-                  <StatCard icon="👥" label="Members" value={dashboard?.stats?.totalMembers ?? 0} />
+                  <StatCard icon={<IconCalendar size={24} color={ACCENT} />} label="Total Events" value={dashboard?.stats?.totalEvents ?? 0} />
+                  <StatCard icon={<IconActivity size={24} color="#16a34a" />} label="Active Events" value={dashboard?.stats?.upcomingEvents ?? 0} sub="ongoing + upcoming" />
+                  <StatCard icon={<IconClipboard size={24} color="#d97706" />} label="Registrations" value={dashboard?.stats?.totalRegistrations ?? 0} />
+                  <StatCard icon={<IconUsers size={24} color="#7c3aed" />} label="Members" value={dashboard?.stats?.totalMembers ?? 0} />
                 </div>
 
                 <SectionTitle>Recent Events</SectionTitle>
                 {events.length === 0
                   ? (
                     <div style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "48px 20px", textAlign: "center" }}>
-                      <div style={{ fontSize: 36, marginBottom: 12 }}>📭</div>
+                      <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><IconInbox size={36} color="#94a3b8" /></div>
                       <div style={{ fontWeight: 700, color: NAV, marginBottom: 6 }}>No events yet</div>
                       <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 20 }}>Create your first event and it will appear on the main website automatically.</div>
                       <button onClick={() => { setActiveTab("events"); setShowCreateEvent(true); }} style={{ padding: "10px 24px", background: NAV, color: "#fff", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
@@ -417,8 +518,8 @@ export default function CommitteeDashboard() {
                               <h3 style={{ margin: 0, fontSize: 14, fontWeight: 700, color: NAV }}>{e.title}</h3>
                               <Badge status={e.status} map={statusColor} />
                             </div>
-                            <div style={{ fontSize: 12, color: "#64748b" }}>📅 {fmt(e.date)} &nbsp;·&nbsp; ⏰ {e.time}</div>
-                            <div style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>📍 {e.venue}</div>
+                            <div style={{ fontSize: 12, color: "#64748b", display: "flex", alignItems: "center", gap: 4 }}><IconCalendar size={12} color="#64748b" /> {fmt(e.date)} &nbsp;·&nbsp; <IconClock size={12} color="#64748b" /> {e.time}</div>
+                            <div style={{ fontSize: 12, color: "#64748b", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}><IconMapPin size={12} color="#64748b" /> {e.venue}</div>
                           </div>
                         </div>
                       ))}
@@ -445,7 +546,7 @@ export default function CommitteeDashboard() {
 
                 {events.length === 0 ? (
                   <div style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "60px 20px", textAlign: "center" }}>
-                    <div style={{ fontSize: 36, marginBottom: 12 }}>📅</div>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><IconCalendar size={36} color="#94a3b8" /></div>
                     <div style={{ fontWeight: 700, color: NAV, marginBottom: 6 }}>No events created yet</div>
                     <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 20 }}>Create an event — it will automatically appear on the main website's Events page.</div>
                     <button onClick={() => setShowCreateEvent(true)} style={{ padding: "10px 24px", background: NAV, color: "#fff", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Create Event</button>
@@ -484,7 +585,7 @@ export default function CommitteeDashboard() {
                 <SectionTitle>Event Registrations</SectionTitle>
                 {registrations.length === 0 ? (
                   <div style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "48px 20px", textAlign: "center" }}>
-                    <div style={{ fontSize: 36, marginBottom: 12 }}>📋</div>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><IconClipboard size={36} color="#94a3b8" /></div>
                     <div style={{ color: "#94a3b8", fontSize: 14 }}>No registrations yet. They'll appear here once students register for your events.</div>
                   </div>
                 ) : (
@@ -526,7 +627,7 @@ export default function CommitteeDashboard() {
 
                 {members.length === 0 ? (
                   <div style={{ background: "#fff", border: `1px solid ${BORDER}`, borderRadius: 12, padding: "60px 20px", textAlign: "center" }}>
-                    <div style={{ fontSize: 36, marginBottom: 12 }}>👥</div>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 12 }}><IconUsers size={36} color="#94a3b8" /></div>
                     <div style={{ fontWeight: 700, color: NAV, marginBottom: 6 }}>No members yet</div>
                     <div style={{ fontSize: 13, color: "#94a3b8", marginBottom: 20 }}>Add your committee members — you can assign them to events when creating one.</div>
                     <button onClick={() => setShowAddMember(true)} style={{ padding: "10px 24px", background: NAV, color: "#fff", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Add Member</button>
@@ -541,8 +642,8 @@ export default function CommitteeDashboard() {
                           </div>
                           <div style={{ fontWeight: 700, fontSize: 14, color: NAV }}>{m.name}</div>
                           <div style={{ fontSize: 12, color: ACCENT, fontWeight: 600, marginTop: 2 }}>{m.role}</div>
-                          {m.department && <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 3 }}>🏛 {m.department}</div>}
-                          {m.phone && <div style={{ fontSize: 11, color: "#94a3b8" }}>📞 {m.phone}</div>}
+                          {m.department && <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 3, display: "flex", alignItems: "center", gap: 4 }}><IconBuilding size={11} color="#94a3b8" /> {m.department}</div>}
+                          {m.phone && <div style={{ fontSize: 11, color: "#94a3b8", display: "flex", alignItems: "center", gap: 4 }}><IconPhone size={11} color="#94a3b8" /> {m.phone}</div>}
                         </div>
                         <button onClick={() => removeMember(m._id)} style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#ef4444", borderRadius: 6, padding: "4px 10px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>
                           Remove

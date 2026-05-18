@@ -201,7 +201,7 @@ export default function Navbar() {
                   {user?.role === "committee" && <button onClick={() => { setDropOpen(false); navigate("/CommitteeDashboard"); }} style={dropItemStyle}>📋 Committee Dashboard</button>}
                 
                   <div style={{ borderTop: "1px solid #f1f5f9" }}>
-                    <button onClick={handleLogout} style={{ ...dropItemStyle, color: "#ef4444" }}>🚪 Sign Out</button>
+                    <button onClick={handleLogout} style={{ ...dropItemStyle, color: "#ef4444" }}>Sign Out</button>
                   </div>
                 </div>
               )}

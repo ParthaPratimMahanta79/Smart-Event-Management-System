@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { openLoginModal } from "../components/Navbar";
 import { COMMITTEES, ALL_COMMITTEES, ONGOING_EVENTS, UPCOMING_EVENTS, PAST_EVENTS } from "../data/eventsData";
+import { Search, X, MapPin, Clock, Calendar, ChevronDown, ChevronUp, School, CheckCircle, Circle } from "lucide-react";
 
 const CATEGORIES = ["All", "Science", "Technology", "Art", "Music", "Sports", "Business","Other"];
 const CAT_COLOR = { Science: "#e85d26", Technology: "#1d6fa4", Art: "#9333ea", Music: "#ea580c", Sports: "#dc2626", Business: "#15803d" };
@@ -64,9 +65,9 @@ function CommitteeDropdown({ activeCommittee, onChange, allCommittees, committee
         borderRadius: 8, fontWeight: 600, fontSize: 13, cursor: "pointer",
         fontFamily: "'Segoe UI', sans-serif", transition: "all 0.15s", whiteSpace: "nowrap",
       }}>
-        <span>{activeCommittee !== "All Committees" && committeeMap[activeCommittee] ? committeeMap[activeCommittee].icon : "🏫"}</span>
+        <span>{activeCommittee !== "All Committees" && committeeMap[activeCommittee] ? committeeMap[activeCommittee].icon : <School size={14} />}</span>
         {activeCommittee}
-        <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 2 }}>{open ? "▲" : "▼"}</span>
+        <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 2 }}>{open ? <ChevronUp size={12} /> : <ChevronDown size={12} />}</span>
       </button>
       {open && (
         <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, background: "#fff", border: "1.5px solid #e2e8f0", borderRadius: 10, boxShadow: "0 8px 28px rgba(0,0,0,0.12)", zIndex: 1000, minWidth: 210, overflow: "hidden" }}>
@@ -84,7 +85,7 @@ function CommitteeDropdown({ activeCommittee, onChange, allCommittees, committee
               }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = "#f8fafc"; }}
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = "transparent"; }}>
-                <span style={{ fontSize: 15 }}>{info ? info.icon : "🏫"}</span>{c}
+                <span style={{ fontSize: 15 }}>{info ? info.icon : <School size={15} />}</span>{c}
               </button>
             );
           })}
@@ -123,7 +124,7 @@ function EventCard({ event, past, registeredIds, committeeMap, isOngoing }) {
   const navigate = useNavigate();
   const accent = CAT_COLOR[event.category] || "#e85d26";
   const committee = event.committee || "Unknown Committee";
-  const committeeInfo = committeeMap[committee] || { icon: "🎪", color: "#64748b" };
+  const committeeInfo = committeeMap[committee] || { icon: null, color: "#64748b" };
   const alreadyRegistered = registeredIds.includes(String(event.id));
 
   const handleRegisterClick = (e) => {
@@ -137,7 +138,7 @@ function EventCard({ event, past, registeredIds, committeeMap, isOngoing }) {
   const getButtonLabel = () => {
     if (past) return "Event Ended";
     if (!isLoggedIn) return "Login to Register";
-    if (alreadyRegistered) return "✓ Registered";
+    if (alreadyRegistered) return "Registered";
     return "Register Now →";
   };
 
@@ -146,6 +147,7 @@ function EventCard({ event, past, registeredIds, committeeMap, isOngoing }) {
       width: "100%", padding: "10px 0", border: "none",
       borderRadius: 7, fontWeight: 700, fontSize: 13, transition: "all 0.2s",
       fontFamily: "'Segoe UI', sans-serif", letterSpacing: "0.02em", flexShrink: 0,
+      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
     };
     if (past)              return { ...base, background: "#f1f5f9", color: "#94a3b8", cursor: "default", pointerEvents: "none" };
     if (alreadyRegistered) return { ...base, background: "#dcfce7", color: "#15803d", cursor: "default", pointerEvents: "none" };
@@ -165,7 +167,7 @@ function EventCard({ event, past, registeredIds, committeeMap, isOngoing }) {
       <div style={{ position: "relative", height: 200, overflow: "hidden", background: "#f1f5f9", flexShrink: 0 }}>
         {event.image
           ? <img src={event.image} alt={event.title} style={{ width: "100%", height: "100%", objectFit: "cover", transform: hov && !past ? "scale(1.05)" : "scale(1)", transition: "transform 0.4s ease", filter: past ? "grayscale(30%)" : "none" }} />
-          : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 48 }}>📅</div>
+          : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}><Calendar size={48} color="#cbd5e1" /></div>
         }
         {past && <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.25)" }} />}
         <div style={{ position: "absolute", bottom: 0, right: 0, background: past ? "#64748b" : accent, color: "#fff", padding: "8px 14px", textAlign: "center", minWidth: 52 }}>
@@ -187,7 +189,7 @@ function EventCard({ event, past, registeredIds, committeeMap, isOngoing }) {
             borderRadius: 20, padding: "4px 12px", fontSize: 11, fontWeight: 700,
             color: committeeInfo.color, maxWidth: "100%", overflow: "hidden",
           }}>
-            <span style={{ fontSize: 13, flexShrink: 0 }}>{committeeInfo.icon}</span>
+            <span style={{ fontSize: 13, flexShrink: 0 }}>{committeeInfo.icon || <School size={13} />}</span>
             <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
               By &nbsp;<span style={{ fontWeight: 800 }}>{committee}</span>
             </span>
@@ -197,27 +199,31 @@ function EventCard({ event, past, registeredIds, committeeMap, isOngoing }) {
         {/* Title */}
         <h3 style={{ margin: "0 0 8px", fontSize: 16, fontWeight: 700, color: "#0f172a", lineHeight: 1.35, fontFamily: "'Georgia', serif" }}>{event.title}</h3>
 
-        {/* Description — flex:1 pushes everything below to bottom */}
+        {/* Description */}
         <p style={{ margin: "0 0 14px", fontSize: 13, color: "#64748b", lineHeight: 1.6, flex: 1 }}>{event.description}</p>
 
-        {/* Time & Location — always just above button */}
+        {/* Time & Location */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, color: "#94a3b8", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
-          <span>⏰ {event.time}</span>
-          <span style={{ color: past ? "#64748b" : accent, fontWeight: 600, fontSize: 12 }}>📍 {event.location}</span>
+          <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Clock size={12} /> {event.time}</span>
+          <span style={{ color: past ? "#64748b" : accent, fontWeight: 600, fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}><MapPin size={12} /> {event.location}</span>
         </div>
 
-        {/* Button or Ongoing badge — always at bottom */}
+        {/* Button or Ongoing badge */}
         {isOngoing ? (
           <div style={{
             width: "100%", padding: "10px 0", background: "#dcfce7",
             color: "#15803d", border: "none", borderRadius: 7,
             fontWeight: 700, fontSize: 13, fontFamily: "'Segoe UI', sans-serif",
             letterSpacing: "0.02em", textAlign: "center", flexShrink: 0,
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
           }}>
-            🟢 Ongoing
+            <Circle size={10} fill="#15803d" color="#15803d" /> Ongoing
           </div>
         ) : (
-          <button onClick={handleRegisterClick} style={getButtonStyle()}>{getButtonLabel()}</button>
+          <button onClick={handleRegisterClick} style={getButtonStyle()}>
+            {alreadyRegistered && <CheckCircle size={14} />}
+            {getButtonLabel()}
+          </button>
         )}
       </div>
     </div>
@@ -242,13 +248,11 @@ export default function Events() {
       .then(r => r.json())
       .then(data => {
         if (data.success && data.committees?.length) {
-          // ── FIX: always start from COMMITTEES so static names are never lost ──
           const merged = { ...COMMITTEES };
           data.committees.forEach(c => {
-            if (!merged[c.name]) merged[c.name] = { icon: "🏫", color: "#64748b" };
+            if (!merged[c.name]) merged[c.name] = { icon: null, color: "#64748b" };
           });
           setCommitteeMap(merged);
-          // Build allCommittees from merged keys so static + DB names both appear
           setAllCommittees(["All Committees", ...Object.keys(merged)]);
         }
       })
@@ -316,10 +320,10 @@ export default function Events() {
           />
         </div>
         <div style={{ display: "flex", alignItems: "center", background: "#f8fafc", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "0 12px", gap: 8 }}>
-          <span style={{ color: "#94a3b8", fontSize: 14 }}>🔍</span>
+          <Search size={14} color="#94a3b8" />
           <input type="text" placeholder="Search events..." value={search} onChange={e => setSearch(e.target.value)}
             style={{ border: "none", outline: "none", fontSize: 13, padding: "8px 0", background: "transparent", color: "#0f172a", width: 200, fontFamily: "'Segoe UI', sans-serif" }} />
-          {search && <button onClick={() => setSearch("")} style={{ border: "none", background: "none", cursor: "pointer", color: "#94a3b8" }}>✕</button>}
+          {search && <button onClick={() => setSearch("")} style={{ border: "none", background: "none", cursor: "pointer", color: "#94a3b8", display: "flex", alignItems: "center" }}><X size={14} /></button>}
         </div>
       </div>
 
@@ -327,7 +331,7 @@ export default function Events() {
 
         {activeCommittee !== "All Committees" && (
           <div style={{ display: "flex", alignItems: "center", gap: 12, background: "#fff", border: `1.5px solid ${(committeeMap[activeCommittee]?.color || "#1a3557")}30`, borderLeft: `4px solid ${committeeMap[activeCommittee]?.color || "#1a3557"}`, borderRadius: 10, padding: "12px 20px", marginBottom: 28, boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
-            <span style={{ fontSize: 22 }}>{committeeMap[activeCommittee]?.icon || "🏫"}</span>
+            <span style={{ fontSize: 22 }}>{committeeMap[activeCommittee]?.icon || <School size={22} />}</span>
             <div>
               <div style={{ fontWeight: 800, color: "#0f172a", fontSize: 15 }}>Showing events by: {activeCommittee}</div>
               <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>{ongoing.length + upcoming.length + past.length} event(s) found</div>
@@ -368,7 +372,7 @@ export default function Events() {
 
         {ongoing.length === 0 && upcoming.length === 0 && past.length === 0 && (
           <div style={{ textAlign: "center", padding: "80px 20px", background: "#fff", borderRadius: 12, border: "1px solid #e5e7eb" }}>
-            <div style={{ fontSize: 40 }}>📭</div>
+            <div style={{ marginBottom: 12 }}><Calendar size={40} color="#cbd5e1" /></div>
             <h3 style={{ color: "#0f172a", marginBottom: 6 }}>No events found</h3>
             <p style={{ color: "#94a3b8", fontSize: 14 }}>Try a different filter or search term.</p>
           </div>

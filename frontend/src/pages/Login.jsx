@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/api";
+import { Mail, Lock, Loader2, AlertTriangle } from "lucide-react";
 
 
 export default function Login() {
@@ -96,9 +97,9 @@ export default function Login() {
               background: "#fef2f2", border: "1px solid #fecaca",
               borderRadius: 8, padding: "10px 14px",
               fontSize: 13, color: "#ef4444", fontWeight: 600,
-              marginBottom: 20,
+              marginBottom: 20, display: "flex", alignItems: "center", gap: 6,
             }}>
-              ⚠ {error}
+              <AlertTriangle size={13} /> {error}
             </div>
           )}
 
@@ -106,8 +107,8 @@ export default function Login() {
           <form onSubmit={handleSubmit}>
             {/* Email */}
             <div style={{ marginBottom: 18 }}>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                📧 Email Address
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                <Mail size={12} /> Email Address
               </label>
               <FocusInput
                 type="email"
@@ -119,8 +120,8 @@ export default function Login() {
 
             {/* Password */}
             <div style={{ marginBottom: 24 }}>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-                🔒 Password
+              <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                <Lock size={12} /> Password
               </label>
               <div style={{ position: "relative" }}>
                 <FocusInput
@@ -161,7 +162,7 @@ export default function Login() {
             >
               {loading ? (
                 <>
-                  <span style={{ width: 16, height: 16, border: "2px solid #ffffff60", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+                  <Loader2 size={16} style={{ animation: "spin 0.8s linear infinite" }} />
                   Signing in...
                 </>
               ) : "Sign In →"}

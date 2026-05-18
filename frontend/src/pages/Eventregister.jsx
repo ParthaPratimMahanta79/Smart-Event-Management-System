@@ -3,6 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ALL_EVENTS, COMMITTEES } from "../data/eventsData";
 import { registerForEvent, getEvent } from "../services/api";
+import {
+  Lock, Loader2, Search, CheckCircle2, AlertTriangle,
+  User, Mail, Phone, GraduationCap, Building2, Calendar,
+  MapPin, Clock, Star, Users,
+} from "lucide-react";
 
 const DEPARTMENTS = [
   "Computer Science & Engineering",
@@ -60,10 +65,10 @@ function Field({ label, icon, error, children }) {
   return (
     <div style={{ marginBottom: 20 }}>
       <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 6, letterSpacing: "0.04em", textTransform: "uppercase" }}>
-        {icon && <span style={{ marginRight: 6 }}>{icon}</span>}{label}
+        {icon && <span style={{ marginRight: 6, verticalAlign: "middle" }}>{icon}</span>}{label}
       </label>
       {children}
-      {error && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#ef4444", fontWeight: 500 }}>⚠ {error}</p>}
+      {error && <p style={{ margin: "4px 0 0", fontSize: 11, color: "#ef4444", fontWeight: 500, display: "flex", alignItems: "center", gap: 4 }}><AlertTriangle size={12} /> {error}</p>}
     </div>
   );
 }
@@ -144,7 +149,7 @@ export default function EventRegister() {
     }
   }, [id]);
 
-  const committeeInfo = event ? (COMMITTEES[event.committee] || { icon: "🎪", color: "#1a3557" }) : null;
+  const committeeInfo = event ? (COMMITTEES[event.committee] || { icon: <Star size={14} />, color: "#1a3557" }) : null;
   const alreadyRegistered = event ? isAlreadyRegistered(user?.id, id) : false;
 
   const [isTeamEvent, setIsTeamEvent] = useState(false);
@@ -179,7 +184,7 @@ export default function EventRegister() {
     return (
       <div style={{ minHeight: "calc(100vh - 64px)", background: "#f5f6fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Segoe UI', sans-serif" }}>
         <div style={{ textAlign: "center", background: "#fff", borderRadius: 16, padding: "48px 40px", boxShadow: "0 8px 40px rgba(0,0,0,0.1)", maxWidth: 400 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+          <div style={{ fontSize: 48, marginBottom: 16, display: "flex", justifyContent: "center" }}><Lock size={48} color="#1a3557" /></div>
           <h2 style={{ color: "#0f172a", marginBottom: 8, fontFamily: "Georgia, serif" }}>Login Required</h2>
           <p style={{ color: "#64748b", fontSize: 14, marginBottom: 28 }}>You need to be logged in to register for events.</p>
           <button onClick={() => navigate("/Login", { state: { from: `/Eventregister/${id}` } })}
@@ -199,7 +204,7 @@ export default function EventRegister() {
     return (
       <div style={{ minHeight: "calc(100vh - 64px)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Segoe UI', sans-serif" }}>
         <div style={{ textAlign: "center", color: "#94a3b8" }}>
-          <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
+          <div style={{ fontSize: 32, marginBottom: 12, display: "flex", justifyContent: "center" }}><Loader2 size={32} style={{ animation: "spin 0.8s linear infinite" }} /></div>
           <p>Loading event...</p>
         </div>
       </div>
@@ -210,7 +215,7 @@ export default function EventRegister() {
     return (
       <div style={{ minHeight: "calc(100vh - 64px)", background: "#f5f6fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Segoe UI', sans-serif" }}>
         <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 48 }}>🔍</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}><Search size={48} color="#94a3b8" /></div>
           <h2 style={{ color: "#0f172a", marginBottom: 8 }}>Event Not Found</h2>
           <p style={{ color: "#64748b", marginBottom: 24 }}>This event doesn't exist or has been removed.</p>
           <button onClick={() => navigate("/Events")} style={{ padding: "10px 28px", background: "#1a3557", color: "#fff", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>← Back to Events</button>
@@ -223,7 +228,7 @@ export default function EventRegister() {
     return (
       <div style={{ minHeight: "calc(100vh - 64px)", background: "#f5f6fa", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Segoe UI', sans-serif" }}>
         <div style={{ textAlign: "center", background: "#fff", borderRadius: 16, padding: "48px 40px", boxShadow: "0 8px 40px rgba(0,0,0,0.1)", maxWidth: 420 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+          <div style={{ fontSize: 48, marginBottom: 16, display: "flex", justifyContent: "center" }}><CheckCircle2 size={48} color="#22c55e" /></div>
           <h2 style={{ color: "#0f172a", marginBottom: 8, fontFamily: "Georgia, serif" }}>Already Registered</h2>
           <p style={{ color: "#64748b", fontSize: 14, marginBottom: 24 }}>You have already registered for <strong>{event.title}</strong>.</p>
           <button onClick={() => navigate("/Events")} style={{ width: "100%", padding: "12px 0", background: "#1a3557", color: "#fff", border: "none", borderRadius: 8, fontWeight: 700, fontSize: 14, cursor: "pointer" }}>← Back to Events</button>
@@ -300,9 +305,9 @@ export default function EventRegister() {
           </div>
           <h1 style={{ margin: "0 0 8px", fontSize: 26, fontWeight: 800, color: "#fff", fontFamily: "'Georgia', serif", letterSpacing: "-0.4px" }}>{event.title}</h1>
           <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-            <span style={{ color: "#93c5fd", fontSize: 13 }}>📅 {event.day} {event.month}</span>
-            <span style={{ color: "#93c5fd", fontSize: 13 }}>🕐 {event.time}</span>
-            <span style={{ color: "#93c5fd", fontSize: 13 }}>📍 {event.location}</span>
+            <span style={{ color: "#93c5fd", fontSize: 13, display: "flex", alignItems: "center", gap: 5 }}><Calendar size={13} /> {event.day} {event.month}</span>
+            <span style={{ color: "#93c5fd", fontSize: 13, display: "flex", alignItems: "center", gap: 5 }}><Clock size={13} /> {event.time}</span>
+            <span style={{ color: "#93c5fd", fontSize: 13, display: "flex", alignItems: "center", gap: 5 }}><MapPin size={13} /> {event.location}</span>
           </div>
         </div>
       </div>
@@ -313,30 +318,30 @@ export default function EventRegister() {
           <div style={{ padding: "28px 32px", borderBottom: "1px solid #f1f5f9" }}>
             <SectionLabel>Personal Information</SectionLabel>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
-              <Field label="First Name" icon="👤" error={errors.firstName}><TextInput value={form.firstName} onChange={e => set("firstName", e.target.value)} placeholder="Rahul" /></Field>
+              <Field label="First Name" icon={<User size={12} />} error={errors.firstName}><TextInput value={form.firstName} onChange={e => set("firstName", e.target.value)} placeholder="Rahul" /></Field>
               <Field label="Last Name" error={errors.lastName}><TextInput value={form.lastName} onChange={e => set("lastName", e.target.value)} placeholder="Sharma" /></Field>
             </div>
-            <Field label="Email Address" icon="📧" error={errors.email}><TextInput type="email" value={form.email} onChange={e => set("email", e.target.value)} placeholder="rahul@example.com" /></Field>
-            <Field label="Phone Number" icon="📱" error={errors.phone}><TextInput type="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="98XXXXXXXX" /></Field>
+            <Field label="Email Address" icon={<Mail size={12} />} error={errors.email}><TextInput type="email" value={form.email} onChange={e => set("email", e.target.value)} placeholder="rahul@example.com" /></Field>
+            <Field label="Phone Number" icon={<Phone size={12} />} error={errors.phone}><TextInput type="tel" value={form.phone} onChange={e => set("phone", e.target.value)} placeholder="98XXXXXXXX" /></Field>
           </div>
 
           <div style={{ padding: "28px 32px", borderBottom: "1px solid #f1f5f9" }}>
             <SectionLabel>Academic Details</SectionLabel>
-            <Field label="Student ID / Roll No" icon="🎓" error={errors.studentId}><TextInput value={form.studentId} onChange={e => set("studentId", e.target.value)} placeholder="DEC/2022/001" /></Field>
+            <Field label="Student ID / Roll No" icon={<GraduationCap size={12} />} error={errors.studentId}><TextInput value={form.studentId} onChange={e => set("studentId", e.target.value)} placeholder="DEC/2022/001" /></Field>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
-              <Field label="Department" icon="🏛" error={errors.department}><SelectInput value={form.department} onChange={e => set("department", e.target.value)} options={DEPARTMENTS} placeholder="Select department" /></Field>
-              <Field label="Year" icon="📅" error={errors.year}><SelectInput value={form.year} onChange={e => set("year", e.target.value)} options={YEARS} placeholder="Select year" /></Field>
+              <Field label="Department" icon={<Building2 size={12} />} error={errors.department}><SelectInput value={form.department} onChange={e => set("department", e.target.value)} options={DEPARTMENTS} placeholder="Select department" /></Field>
+              <Field label="Year" icon={<Calendar size={12} />} error={errors.year}><SelectInput value={form.year} onChange={e => set("year", e.target.value)} options={YEARS} placeholder="Select year" /></Field>
             </div>
           </div>
 
           <div style={{ padding: "28px 32px", borderBottom: "1px solid #f1f5f9", background: "#fafbfc" }}>
             <SectionLabel extra="AUTO-FILLED">Event Details</SectionLabel>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 20px" }}>
-              <Field label="Event Name" icon="🎪"><TextInput value={event.title} disabled /></Field>
-              <Field label="Organizing Committee" icon="🏛">
+              <Field label="Event Name" icon={<Star size={12} />}><TextInput value={event.title} disabled /></Field>
+              <Field label="Organizing Committee" icon={<Building2 size={12} />}>
                 <div style={{ padding: "10px 14px", border: `1.5px solid ${committeeInfo.color}40`, borderRadius: 8, fontSize: 13, background: committeeInfo.color + "08", color: committeeInfo.color, fontWeight: 700, display: "flex", alignItems: "center", gap: 8 }}>
                   <span>{committeeInfo.icon}</span>{event.committee}
-                  <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 600, marginLeft: "auto" }}>🔒 Locked</span>
+                  <span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 600, marginLeft: "auto", display: "flex", alignItems: "center", gap: 4 }}><Lock size={10} /> Locked</span>
                 </div>
               </Field>
             </div>
@@ -354,7 +359,7 @@ export default function EventRegister() {
             </div>
             {isTeamEvent && (
               <div>
-                <Field label="Team Name" icon="👥" error={errors.teamName}><TextInput value={form.teamName} onChange={e => set("teamName", e.target.value)} placeholder="Team Phoenix" /></Field>
+                <Field label="Team Name" icon={<Users size={12} />} error={errors.teamName}><TextInput value={form.teamName} onChange={e => set("teamName", e.target.value)} placeholder="Team Phoenix" /></Field>
                 <div style={{ fontSize: 12, fontWeight: 700, color: "#475569", marginBottom: 12, marginTop: 8 }}>Team Members ({form.members.length}/5)</div>
                 {form.members.map((m, i) => (
                   <div key={i} style={{ background: "#f8fafc", borderRadius: 10, border: "1px solid #e5e7eb", padding: "16px 18px", marginBottom: 12 }}>
@@ -383,13 +388,13 @@ export default function EventRegister() {
 
           <div style={{ padding: "24px 32px" }}>
             {Object.keys(errors).length > 0 && (
-              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 16px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 16 }}>
-                ⚠ Please fix the errors above before submitting.
+              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 16px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+                <AlertTriangle size={13} /> Please fix the errors above before submitting.
               </div>
             )}
             {apiError && (
-              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 16px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 16 }}>
-                ⚠ {apiError}
+              <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "10px 16px", fontSize: 12, color: "#ef4444", fontWeight: 600, marginBottom: 16, display: "flex", alignItems: "center", gap: 6 }}>
+                <AlertTriangle size={13} /> {apiError}
               </div>
             )}
             <button onClick={handleSubmit} disabled={submitting} style={{
@@ -404,7 +409,7 @@ export default function EventRegister() {
               onMouseLeave={e => { if (!submitting) e.currentTarget.style.background = "#1a3557"; }}
             >
               {submitting
-                ? <><span style={{ width: 16, height: 16, border: "2px solid #ffffff60", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />Submitting...</>
+                ? <><Loader2 size={16} style={{ animation: "spin 0.8s linear infinite" }} />Submitting...</>
                 : <>Submit Registration →</>}
             </button>
             <p style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 12 }}>

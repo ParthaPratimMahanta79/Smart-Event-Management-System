@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { registerUser } from "../services/api";
+import { User, Mail, Phone, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
 
 function FocusInput({ type = "text", value, onChange, placeholder, autoComplete = "off" }) {
   const [focused, setFocused] = useState(false);
@@ -113,10 +114,7 @@ export default function Register() {
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto 16px",
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
+            <User size={24} color="#fff" strokeWidth={2.2} />
           </div>
           <h1 style={{ margin: "0 0 6px", fontSize: 24, fontWeight: 800, color: "#0f172a", fontFamily: "Georgia, serif" }}>
             Create Account
@@ -133,12 +131,13 @@ export default function Register() {
             borderRadius: 8, padding: "10px 14px",
             fontSize: 13, color: "#ef4444", fontWeight: 600, marginBottom: 20,
           }}>
-            ⚠ {apiError}
+            <AlertCircle size={13} style={{ marginRight: 6, verticalAlign: "middle" }} />
+            {apiError}
           </div>
         )}
 
         <form onSubmit={handleSubmit} autoComplete="off">
-          <Field label="Full Name" icon="👤" error={errors.name}>
+          <Field label="Full Name" icon={<User size={12} />} error={errors.name}>
             <FocusInput
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
@@ -147,7 +146,7 @@ export default function Register() {
             />
           </Field>
 
-          <Field label="Email Address" icon="📧" error={errors.email}>
+          <Field label="Email Address" icon={<Mail size={12} />} error={errors.email}>
             <FocusInput
               type="email"
               value={form.email}
@@ -157,7 +156,7 @@ export default function Register() {
             />
           </Field>
 
-          <Field label="Phone Number" icon="📱" error={errors.phone}>
+          <Field label="Phone Number" icon={<Phone size={12} />} error={errors.phone}>
             <FocusInput
               type="tel"
               value={form.phone}
@@ -168,7 +167,7 @@ export default function Register() {
           </Field>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 16px" }}>
-            <Field label="Password" icon="🔒" error={errors.password}>
+            <Field label="Password" icon={<Lock size={12} />} error={errors.password}>
               <div style={{ position: "relative" }}>
                 <FocusInput
                   type={showPass ? "text" : "password"}
@@ -181,7 +180,9 @@ export default function Register() {
                   position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
                   background: "none", border: "none", cursor: "pointer",
                   fontSize: 12, color: "#94a3b8",
-                }}>{showPass ? "Hide" : "Show"}</button>
+                }}>
+                  {showPass ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
               </div>
             </Field>
             <Field label="Confirm" error={errors.confirmPassword}>
