@@ -39,6 +39,7 @@ const seed = async () => {
     { name: "Media Committee",    email: "media@smartevent.com",    password: "media123",    department: "Media & Photography" },
     { name: "NSS Committee",      email: "nss@smartevent.com",      password: "nss123",      department: "Social Service" },
     { name: "Art Committee",      email: "art@smartevent.com",      password: "art123",      department: "Fine Arts" },
+    { name: "Civics Committee",   email: "civics@gmail.com",   password: "Civics123",   department: "Health and Human Services" }
   ];
 
   for (const c of committees) {
